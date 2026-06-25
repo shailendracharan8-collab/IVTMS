@@ -7,7 +7,8 @@ import {
 } from 'lucide-react';
 import Layout from './layout/Layout';
 
-const API_URL = 'http://localhost:5050/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050/api';
+const SERVER_URL = API_URL.replace('/api', '');
 
 const CitizenDashboard = ({ userInfo, onLogout }) => {
   const [activeSection, setActiveSection] = useState('overview');
@@ -395,7 +396,7 @@ const CitizenDashboard = ({ userInfo, onLogout }) => {
                           <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.85rem', marginBottom: '1rem' }}>
                             {v.documents.map(doc => (
                               <li key={doc._id}>
-                                <a href={`http://localhost:5050${doc.url}`} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: 500 }}>
+                                <a href={`${SERVER_URL}${doc.url}`} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: 500 }}>
                                   {doc.docType} Document
                                 </a>
                                 <span style={{ color: 'var(--text-muted)', marginLeft: '0.5rem', fontSize: '0.75rem' }}>({new Date(doc.uploadedAt).toLocaleDateString()})</span>

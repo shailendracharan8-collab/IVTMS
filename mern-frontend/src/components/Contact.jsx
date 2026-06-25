@@ -12,7 +12,8 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5050/api/messages', formData);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050/api';
+      await axios.post(`${API_URL}/messages`, formData);
       setSent(true);
       setFormData({ name: '', email: '', message: '' });
       setTimeout(() => setSent(false), 3000);

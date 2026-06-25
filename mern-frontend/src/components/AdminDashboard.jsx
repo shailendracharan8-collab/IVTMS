@@ -13,7 +13,7 @@ import Layout from './layout/Layout';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
-const API_URL = 'http://localhost:5050/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050/api';
 
 const AdminDashboard = ({ userInfo, onLogout }) => {
   const [activeSection, setActiveSection] = useState('overview');

@@ -17,7 +17,8 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5050/api/auth/login', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050/api';
+      const response = await axios.post(`${API_URL}/auth/login`, {
         identifier: username, 
         password,
         role

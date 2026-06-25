@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import Layout from './layout/Layout';
 
-const API_URL = 'http://localhost:5050/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050/api';
 
 const InspectorDashboard = ({ userInfo, onLogout }) => {
   const [activeSection, setActiveSection] = useState('test');

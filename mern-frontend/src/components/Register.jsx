@@ -19,7 +19,8 @@ const Register = () => {
     e.preventDefault();
     try {
       const fullName = `${firstName} ${lastName}`.trim();
-      const response = await axios.post('http://localhost:5050/api/auth/register', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050/api';
+      const response = await axios.post(`${API_URL}/auth/register`, {
         fullName,
         email,
         aadhaarNumber,
