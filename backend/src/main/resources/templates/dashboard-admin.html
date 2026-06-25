@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Console - IVTMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --admin-primary: #6366f1;
+            --admin-secondary: #a855f7;
+            --admin-accent: #f43f5e;
+            --admin-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            --sidebar-width: 280px;
+            --transition-speed: 0.4s;
+        }
+
+        [data-theme="dark"] {
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        [data-theme="dark"] body {
+            background: radial-gradient(circle at top right, #1e1b4b, #020617);
+            color: #f1f5f9;
+        }
+
+        .glass-sidebar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            border-right: 1px solid var(--glass-border);
+            width: var(--sidebar-width);
+            z-index: 1000;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link-custom {
+            padding: 12px 20px;
+            margin: 6px 16px;
+            border-radius: 14px;
+            color: #94a3b8;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+        }
+
+        .nav-link-custom:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--admin-primary);
+            transform: translateX(5px);
+        }
+
+        .nav-link-custom.active {
+            background: var(--admin-gradient);
+            color: white !important;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--admin-gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .dashboard-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+        }
+
+        .dashboard-section.active-section {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .log-line {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+        }
+
+        .pulse-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            display: inline-block;
+            box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        [data-theme="dark"] .glass-card:hover {
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
+        }
+
+        /* Premium Form Elements in Glass Cards */
+        .glass-card .form-control, 
+        .glass-card .form-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: inherit;
+            border-radius: 12px;
+            padding: 10px 16px;
+            transition: all 0.3s;
+        }
+
+        .glass-card .form-control:focus, 
+        .glass-card .form-select:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--admin-primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+            color: inherit;
+        }
+
+        .glass-card .input-group-text {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-right: none;
+            color: var(--admin-primary);
+            border-radius: 12px 0 0 12px;
+        }
+
+        .glass-card .input-group .form-control {
+            border-left: none;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .glass-card .btn-primary {
+            background: var(--admin-gradient);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s;
+        }
+
+        .glass-card .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .theme-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: #94a3b8;
+            transition: all 0.3s;
+        }
+
+        .theme-btn:hover {
+            background: var(--admin-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* Modal Glassmorphism */
+        .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            color: inherit;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1.5rem 2rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--glass-border);
+            padding: 1.5rem 2rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal .form-control, .modal .form-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: inherit;
+            border-radius: 12px;
+            padding: 10px 16px;
+        }
+
+        [data-theme="dark"] .modal-content {
+            background: rgba(15, 23, 42, 0.8);
+        }
+    </style>
+</head>
+<body th:data-theme="${session.theme ?: 'dark'}">
+
+<div class="wrapper d-flex">
+    <!-- Sidebar -->
+    <aside class="glass-sidebar h-100 sticky-top d-flex flex-column py-4">
+        <div class="px-4 mb-5">
+            <div class="d-flex align-items-center gap-2">
+                <div class="bg-primary p-2 rounded-3 text-white">
+                    <i class="bi bi-terminal-fill fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold">IVTMS</h5>
+                    <small class="text-muted">Super Admin</small>
+                </div>
+            </div>
+        </div>
+
+        <nav class="flex-grow-1">
+            <a href="#" class="nav-link-custom active" onclick="showSection('section-overview', this)">
+                <i class="bi bi-grid-1x2"></i> Overview
+            </a>
+            <a href="#" class="nav-link-custom" onclick="showSection('section-users', this)">
+                <i class="bi bi-people"></i> User Directory
+            </a>
+            <a href="#" class="nav-link-custom" onclick="showSection('section-infrastructure', this)">
+                <i class="bi bi-diagram-3"></i> Infrastructure
+            </a>
+            <a href="#" class="nav-link-custom" onclick="showSection('section-logs', this)">
+                <i class="bi bi-shield-lock"></i> System Logs
+            </a>
+            <div class="border-top my-3 mx-4 opacity-10"></div>
+            <a th:href="@{/}" class="nav-link-custom">
+                <i class="bi bi-house"></i> Main Website
+            </a>
+            <a href="#" class="nav-link-custom" onclick="showSection('section-settings', this)">
+                <i class="bi bi-sliders2"></i> Global Config
+            </a>
+        </nav>
+
+        <div class="mt-auto px-4">
+            <div class="p-3 rounded-4 bg-light bg-opacity-10 border border-white border-opacity-10">
+                <div class="d-flex align-items-center gap-3 mb-3" th:if="${user != null}">
+                    <img th:src="${'https://ui-avatars.com/api/?name=' + #strings.replace(user.fullName, ' ', '+') + '&background=6366f1&color=fff'}" class="rounded-circle" width="40">
+                    <div class="overflow-hidden">
+                        <h6 class="mb-0 small fw-bold text-truncate" th:text="${user.fullName}">Admin Name</h6>
+                        <span class="text-muted" style="font-size: 0.7rem;">Root Access</span>
+                    </div>
+                </div>
+                <li>
+                    <form th:action="@{/logout}" method="post" id="logoutForm" style="display:none;"></form>
+                    <a href="javascript:document.getElementById('logoutForm').submit()" class="btn btn-outline-danger btn-sm w-100 rounded-pill">Logout</a>
+                </li>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main id="content" class="flex-grow-1 p-4 overflow-auto">
+        <!-- Top Nav -->
+        <header class="d-flex justify-content-between align-items-center mb-5 px-2">
+            <div>
+                <h3 class="fw-bold mb-0">System Dashboard</h3>
+                <p class="text-muted mb-0 small">Node: <span class="text-primary fw-bold">AS-MASTER-01</span> | Status: <span class="pulse-indicator"></span> Healthy</p>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="input-group input-group-sm d-none d-lg-flex" style="width: 250px;">
+                    <span class="input-group-text bg-transparent border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control bg-transparent border-start-0" placeholder="Search resources...">
+                </div>
+                <button id="theme-toggle" class="btn btn-light rounded-circle shadow-sm">
+                    <i class="bi bi-moon-stars"></i>
+                </button>
+                <div class="dropdown">
+                    <button class="btn btn-light rounded-circle shadow-sm" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end p-3 glass-card border-0 shadow-lg" style="width: 300px;">
+                        <li class="small fw-bold mb-2">Notifications</li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li class="p-2 small">New Inspector Registration request from MH-12.</li>
+                        <li class="p-2 small">System maintenance scheduled for 02:00 AM.</li>
+                    </ul>
+                </div>
+            </div>
+        <!-- ===== SECTION: OVERVIEW ===== -->
+        <div id="section-overview" class="dashboard-section active-section">
+            <div class="row g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-4 text-primary">
+                                <i class="bi bi-people fs-4"></i>
+                            </div>
+                            <span class="badge bg-success bg-opacity-10 text-success align-self-start">+12%</span>
+                        </div>
+                        <h3 class="fw-bold mb-1">12,482</h3>
+                        <p class="text-muted small mb-0">Total Citizens</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div class="bg-warning bg-opacity-10 p-3 rounded-4 text-warning">
+                                <i class="bi bi-shield-check fs-4"></i>
+                            </div>
+                            <span class="badge bg-success bg-opacity-10 text-success align-self-start">+5%</span>
+                        </div>
+                        <h3 class="fw-bold mb-1">98.4%</h3>
+                        <p class="text-muted small mb-0">Compliance Rate</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div class="bg-info bg-opacity-10 p-3 rounded-4 text-info">
+                                <i class="bi bi-activity fs-4"></i>
+                            </div>
+                            <span class="badge bg-danger bg-opacity-10 text-danger align-self-start">-2%</span>
+                        </div>
+                        <h3 class="fw-bold mb-1">1.2s</h3>
+                        <p class="text-muted small mb-0">Avg Latency</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div class="bg-success bg-opacity-10 p-3 rounded-4 text-success">
+                                <i class="bi bi-currency-rupee fs-4"></i>
+                            </div>
+                            <span class="badge bg-success bg-opacity-10 text-success align-self-start">+18%</span>
+                        </div>
+                        <h3 class="fw-bold mb-1">₹4.2M</h3>
+                        <p class="text-muted small mb-0">Revenue (MTD)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="glass-card p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold mb-0">System Performance Metrics</h5>
+                            <select class="form-select form-select-sm w-auto bg-transparent border-0 text-muted">
+                                <option>Last 7 Days</option>
+                                <option>Last 30 Days</option>
+                            </select>
+                        </div>
+                        <canvas id="aqiChart" height="250"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="glass-card p-4 h-100">
+                        <h5 class="fw-bold mb-4">Quick Actions</h5>
+                        <div class="d-grid gap-3">
+                            <button class="btn btn-light glass-card text-start py-3 px-4 d-flex align-items-center justify-content-between border-0 shadow-sm" onclick="showSection('section-control', null)">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                                        <i class="bi bi-percent text-primary"></i>
+                                    </div>
+                                    <span class="small fw-semibold">Adjust Tax Rates</span>
+                                </div>
+                                <i class="bi bi-chevron-right text-muted small"></i>
+                            </button>
+                            <button class="btn btn-light glass-card text-start py-3 px-4 d-flex align-items-center justify-content-between border-0 shadow-sm" onclick="showSection('section-infrastructure', null)">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-success bg-opacity-10 p-2 rounded-3 me-3">
+                                        <i class="bi bi-person-plus text-success"></i>
+                                    </div>
+                                    <span class="small fw-semibold">Deploy RTO Node</span>
+                                </div>
+                                <i class="bi bi-chevron-right text-muted small"></i>
+                            </button>
+                            <button class="btn btn-light glass-card text-start py-3 px-4 d-flex align-items-center justify-content-between border-0 shadow-sm" onclick="showSection('section-users', null)">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-secondary bg-opacity-10 p-2 rounded-3 me-3">
+                                        <i class="bi bi-people text-secondary"></i>
+                                    </div>
+                                    <span class="small fw-semibold">Manage Personnel</span>
+                                </div>
+                                <i class="bi bi-chevron-right text-muted small"></i>
+                            </button>
+                        </div>
+                        <hr class="my-4 opacity-10">
+                        <h6 class="fw-bold text-muted mb-3 small">Real-time Activity Feed</h6>
+                        <div class="activity-feed">
+                            <div class="d-flex gap-3 mb-3">
+                                <div class="bg-primary bg-opacity-10 p-2 rounded-circle align-self-start" style="width:32px; height:32px; display:flex; align-items:center; justify-content:center;">
+                                    <i class="bi bi-check2 text-primary" style="font-size: 0.8rem;"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0 small fw-bold">Admin R. updated policy</p>
+                                    <span class="text-muted" style="font-size: 0.7rem;">10 mins ago</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-3 mb-3">
+                                <div class="bg-danger bg-opacity-10 p-2 rounded-circle align-self-start" style="width:32px; height:32px; display:flex; align-items:center; justify-content:center;">
+                                    <i class="bi bi-shield-x text-danger" style="font-size: 0.8rem;"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0 small fw-bold">System blocked bulk IP</p>
+                                    <span class="text-muted" style="font-size: 0.7rem;">1 hour ago</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-3">
+                                <div class="bg-success bg-opacity-10 p-2 rounded-circle align-self-start" style="width:32px; height:32px; display:flex; align-items:center; justify-content:center;">
+                                    <i class="bi bi-node-plus text-success" style="font-size: 0.8rem;"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0 small fw-bold">New RTO node deployed</p>
+                                    <span class="text-muted" style="font-size: 0.7rem;">3 hours ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+            <!-- ===== SECTION: USER MANAGEMENT ===== -->
+            <div id="section-users" class="dashboard-section">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-1">User Directory</h2>
+                        <p class="text-muted mb-0">Manage system personnel and access levels.</p>
+                    </div>
+                    <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                        <i class="bi bi-person-plus-fill me-2"></i> Add New User
+                    </button>
+                </div>
+
+                <div class="glass-card p-4">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control bg-transparent border-start-0" placeholder="Search by name, email or role...">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select bg-transparent">
+                                <option>All Roles</option>
+                                <option>Admin</option>
+                                <option>RTO Officer</option>
+                                <option>Inspector</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.1em;">
+                                    <th class="border-0 pb-3">Personnel</th>
+                                    <th class="border-0 pb-3">Role</th>
+                                    <th class="border-0 pb-3">Contact</th>
+                                    <th class="border-0 pb-3">Status</th>
+                                    <th class="border-0 pb-3 text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr th:each="userItem : ${allUsers}">
+                                    <td class="border-0">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img th:src="${'https://ui-avatars.com/api/?name=' + #strings.replace(userItem.fullName, ' ', '+') + '&background=6366f1&color=fff'}" width="36" class="rounded-circle">
+                                            <div class="fw-semibold" th:text="${userItem.fullName}">User Name</div>
+                                        </div>
+                                    </td>
+                                    <td class="border-0">
+                                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill" th:text="${userItem.role}">Role</span>
+                                    </td>
+                                    <td class="border-0 text-muted small" th:text="${userItem.email}">Email</td>
+                                    <td class="border-0">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span th:if="${userItem.status == 'Active'}" class="pulse-indicator"></span>
+                                            <span th:text="${userItem.status}" class="small">Status</span>
+                                        </div>
+                                    </td>
+                                    <td class="border-0 text-end">
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-light rounded-circle me-2" title="Edit" th:onclick="'editUser(\'' + ${userItem.fullName} + '\',\'' + ${userItem.role} + '\',\'' + ${userItem.email} + '\')'"><i class="bi bi-pencil-square"></i></button>
+                                            <button class="btn btn-sm btn-light rounded-circle text-danger" title="Toggle Status" th:onclick="'toggleUser(this, \'' + ${userItem.email} + '\')'"><i class="bi bi-power"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION: INFRASTRUCTURE ===== -->
+            <div id="section-infrastructure" class="dashboard-section">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-1">Infrastructure Map</h2>
+                        <p class="text-muted mb-0">State-wide RTO nodes and IoT endpoint status.</p>
+                    </div>
+                    <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addRtoModal">
+                        <i class="bi bi-plus-circle-fill me-2"></i> Deploy Node
+                    </button>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="glass-card p-4 text-center">
+                            <div class="display-5 fw-bold text-primary mb-1">48</div>
+                            <div class="text-muted small text-uppercase fw-bold">Active Nodes</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-card p-4 text-center border-bottom border-success border-4">
+                            <div class="display-5 fw-bold text-success mb-1">45</div>
+                            <div class="text-muted small text-uppercase fw-bold">Online</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-card p-4 text-center border-bottom border-danger border-4">
+                            <div class="display-5 fw-bold text-danger mb-1">3</div>
+                            <div class="text-muted small text-uppercase fw-bold">Sync Issues</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.1em;">
+                                    <th class="border-0 pb-3">Node ID</th>
+                                    <th class="border-0 pb-3">Region</th>
+                                    <th class="border-0 pb-3">Lead Officer</th>
+                                    <th class="border-0 pb-3">Health</th>
+                                    <th class="border-0 pb-3 text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border-0 fw-bold">MH-PN-01</td>
+                                    <td class="border-0">Pune Metro</td>
+                                    <td class="border-0">Officer Raj</td>
+                                    <td class="border-0"><span class="badge bg-success bg-opacity-10 text-success rounded-pill">Optimal</span></td>
+                                    <td class="border-0 text-end"><button class="btn btn-sm btn-light rounded-pill" onclick="viewRto('RTO-PN-01','Pune')">Details</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="border-0 fw-bold">MH-MB-02</td>
+                                    <td class="border-0">Mumbai South</td>
+                                    <td class="border-0">Officer Singh</td>
+                                    <td class="border-0"><span class="badge bg-success bg-opacity-10 text-success rounded-pill">Optimal</span></td>
+                                    <td class="border-0 text-end"><button class="btn btn-sm btn-light rounded-pill" onclick="viewRto('RTO-MH-02','Mumbai')">Details</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="border-0 fw-bold">MH-NK-03</td>
+                                    <td class="border-0">Nashik City</td>
+                                    <td class="border-0">Officer Patil</td>
+                                    <td class="border-0"><span class="badge bg-danger bg-opacity-10 text-danger rounded-pill">Offline</span></td>
+                                    <td class="border-0 text-end"><button class="btn btn-sm btn-light rounded-pill" onclick="viewRto('RTO-NK-03','Nashik')">Details</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ===== SECTION: CONTROL PANEL ===== -->
+            <div id="section-control" class="dashboard-section">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-1">Control Panel</h2>
+                        <p class="text-muted mb-0">System-wide overrides and critical configurations.</p>
+                    </div>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="glass-card p-4 h-100">
+                            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                                <span class="bg-danger bg-opacity-10 p-2 rounded-3 me-3">
+                                    <i class="bi bi-broadcast text-danger"></i>
+                                </span>
+                                System Alerts
+                            </h5>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-muted">Alert Message</label>
+                                <textarea class="form-control bg-transparent" rows="3" id="alertMsg" placeholder="Enter system-wide alert message..."></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-muted">Priority Level</label>
+                                <select class="form-select bg-transparent" id="alertType">
+                                    <option>Information</option>
+                                    <option>Warning</option>
+                                    <option>Critical</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-danger w-100 rounded-pill py-2 fw-semibold" onclick="triggerAlert()">
+                                <i class="bi bi-broadcast me-2"></i>Broadcast Alert
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="glass-card p-4 h-100">
+                            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                                <span class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                                    <i class="bi bi-percent text-primary"></i>
+                                </span>
+                                Fiscal Policy
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-muted">Two-Wheeler Road Tax (%)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control bg-transparent" value="6">
+                                        <span class="input-group-text bg-transparent">%</span>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-muted">Four-Wheeler Road Tax (%)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control bg-transparent" value="9">
+                                        <span class="input-group-text bg-transparent">%</span>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-muted">Commercial Vehicle Tax (%)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control bg-transparent" value="12">
+                                        <span class="input-group-text bg-transparent">%</span>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button class="btn btn-primary w-100 rounded-pill py-2 fw-semibold" onclick="saveTaxRates()">
+                                        <i class="bi bi-save me-2"></i>Commit Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="glass-card p-4">
+                            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                                <span class="bg-success bg-opacity-10 p-2 rounded-3 me-3">
+                                    <i class="bi bi-toggles text-success"></i>
+                                </span>
+                                Functional Switches
+                            </h5>
+                            <div class="row g-4">
+                                <div class="col-sm-6 col-lg-3">
+                                    <div class="p-3 rounded-4 border border-white border-opacity-10 bg-white bg-opacity-5">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-semibold small">Maintenance Mode</span>
+                                            <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch"></div>
+                                        </div>
+                                        <p class="text-muted mb-0" style="font-size: 0.75rem;">Block public access for updates</p>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-lg-3">
+                                    <div class="p-3 rounded-4 border border-white border-opacity-10 bg-white bg-opacity-5">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-semibold small">New Registrations</span>
+                                            <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" checked></div>
+                                        </div>
+                                        <p class="text-muted mb-0" style="font-size: 0.75rem;">Accept new citizen signups</p>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-lg-3">
+                                    <div class="p-3 rounded-4 border border-white border-opacity-10 bg-white bg-opacity-5">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-semibold small">Notifications</span>
+                                            <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" checked></div>
+                                        </div>
+                                        <p class="text-muted mb-0" style="font-size: 0.75rem;">Automated SMS/Email alerts</p>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-lg-3">
+                                    <div class="p-3 rounded-4 border border-white border-opacity-10 bg-white bg-opacity-5">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-semibold small">Fraud Detection</span>
+                                            <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" checked></div>
+                                        </div>
+                                        <p class="text-muted mb-0" style="font-size: 0.75rem;">AI-driven anomaly flagging</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION: SYSTEM LOGS ===== -->
+            <div id="section-logs" class="dashboard-section">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-1">Audit Trail</h2>
+                        <p class="text-muted mb-0">Complete historical record of all system operations.</p>
+                    </div>
+                    <button class="btn btn-light glass-card rounded-pill px-4" onclick="window.print()">
+                        <i class="bi bi-printer me-2"></i> Print Log
+                    </button>
+                </div>
+                
+                <div class="glass-card p-4">
+                    <div class="d-flex gap-3 mb-4 flex-wrap">
+                        <div class="input-group input-group-sm" style="max-width:300px;">
+                            <span class="input-group-text bg-transparent border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                            <input type="text" id="logSearch" class="form-control bg-transparent border-start-0" placeholder="Search by user or action..." onkeyup="filterTable('logSearch', 'logsTableBody')">
+                        </div>
+                        <select class="form-select form-select-sm bg-transparent w-auto">
+                            <option>All Severity Levels</option>
+                            <option>Info</option>
+                            <option>Warning</option>
+                            <option>Critical</option>
+                        </select>
+                        <button class="btn btn-primary btn-sm rounded-pill px-3">Apply Filters</button>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 ms-auto"><i class="bi bi-download me-1"></i>Export CSV</button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr class="text-muted small uppercase">
+                                    <th class="border-0">Timestamp</th>
+                                    <th class="border-0">User Entity</th>
+                                    <th class="border-0">Operational Action</th>
+                                    <th class="border-0">IP Context</th>
+                                    <th class="border-0">Level</th>
+                                </tr>
+                            </thead>
+                            <tbody class="small" id="logsTableBody">
+                                <tr th:each="log : ${systemLogs}">
+                                    <td class="border-0" th:text="${#temporals.format(log.timestamp, 'dd MMM, hh:mm a')}">Timestamp</td>
+                                    <td class="border-0 fw-semibold" th:text="${log.userEmail}">User</td>
+                                    <td class="border-0" th:text="${log.action + ' - ' + log.resource}">Action</td>
+                                    <td class="border-0 text-muted" th:text="${log.ipAddress}">IP</td>
+                                    <td class="border-0">
+                                        <span class="badge rounded-pill px-2" 
+                                              th:classappend="${log.status == 'SUCCESS' ? 'bg-success bg-opacity-10 text-success' : 
+                                                               (log.status == 'CRITICAL' || log.status == 'FAILED' ? 'bg-danger bg-opacity-10 text-danger' : 'bg-warning bg-opacity-10 text-warning')}"
+                                              th:text="${log.status}">Level</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(systemLogs)}">
+                                    <td colspan="5" class="text-center py-4 text-muted small">No system logs available.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION: SETTINGS ===== -->
+            <div id="section-settings" class="dashboard-section">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-1">Global Settings</h2>
+                        <p class="text-muted mb-0">Configure system behavior and administrative preferences.</p>
+                    </div>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <div class="glass-card p-4">
+                            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                                <span class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                                    <i class="bi bi-person-badge text-primary"></i>
+                                </span>
+                                Administrative Profile
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Primary Operator</label>
+                                    <input type="text" class="form-control bg-transparent" value="System Administrator">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Contact Endpoint</label>
+                                    <input type="email" class="form-control bg-transparent" value="admin@ivtms.gov.in">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-muted">Update Authentication Key</label>
+                                    <input type="password" class="form-control bg-transparent" placeholder="••••••••••••">
+                                    <small class="text-muted">Multi-factor authentication is currently <span class="text-success fw-bold">Enabled</span></small>
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <button class="btn btn-primary rounded-pill px-4 py-2" onclick="showToast('Profile security updated.')">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-5">
+                        <div class="glass-card p-4">
+                            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                                <span class="bg-secondary bg-opacity-10 p-2 rounded-3 me-3">
+                                    <i class="bi bi-palette text-secondary"></i>
+                                </span>
+                                UI Preferences
+                            </h5>
+                            <div class="d-grid gap-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0 fw-semibold">Dark Interface</h6>
+                                        <p class="text-muted mb-0 small">OLED optimized colors</p>
+                                    </div>
+                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="darkModeToggle" checked onchange="document.getElementById('theme-toggle').click()"></div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0 fw-semibold">Auto-Refresh Feed</h6>
+                                        <p class="text-muted mb-0 small">Sync logs every 60s</p>
+                                    </div>
+                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" checked></div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0 fw-semibold">System Sound</h6>
+                                        <p class="text-muted mb-0 small">Alert chime on critical events</p>
+                                    </div>
+                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch"></div>
+                                </div>
+                                <div class="mt-2">
+                                    <label class="form-label small fw-bold text-muted">Localization</label>
+                                    <select class="form-select bg-transparent">
+                                        <option>English (Global)</option>
+                                        <option>Hindi (IN)</option>
+                                        <option>Marathi (MH)</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-secondary rounded-pill w-100 py-2" onclick="showToast('Preferences synced.')">Apply Settings</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- End Main Content -->
+    </div>
+    <!-- End Page Content -->
+</div>
+<!-- End Wrapper -->
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Add New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12"><label class="form-label">Full Name</label><input type="text" class="form-control" id="add-full-name" placeholder="Enter full name"></div>
+                    <div class="col-12"><label class="form-label">Email</label><input type="email" class="form-control" id="add-email" placeholder="Enter email"></div>
+                    <div class="col-12"><label class="form-label">Aadhaar Number</label><input type="text" class="form-control" id="add-aadhaar" placeholder="12-digit Aadhaar Number"></div>
+                    <div class="col-sm-12"><label class="form-label">Role</label>
+                        <select class="form-select" id="add-role">
+                            <option value="RTO">RTO Officer</option>
+                            <option value="INSPECTOR">PUC Inspector</option>
+                            <option value="CITIZEN">Citizen</option>
+                            <option value="ADMIN">Admin</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" onclick="addUser()">Add User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12"><label class="form-label">Full Name</label><input type="text" class="form-control" id="editName"></div>
+                    <div class="col-sm-6"><label class="form-label">Role</label>
+                        <select class="form-select" id="editRole"><option>RTO Officer</option><option>PUC Inspector</option><option>Citizen</option></select>
+                    </div>
+                    <div class="col-sm-6"><label class="form-label">Location / Post</label><input type="text" class="form-control" id="editLocation"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" onclick="showToast('User updated.'); bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add RTO Modal -->
+<div class="modal fade" id="addRtoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Deploy New RTO Node</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12"><label class="form-label">Node ID</label><input type="text" class="form-control" placeholder="e.g. RTO-NP-05"></div>
+                    <div class="col-12"><label class="form-label">Location</label><input type="text" class="form-control" placeholder="City / District"></div>
+                    <div class="col-12"><label class="form-label">Assigned Officer</label><input type="text" class="form-control" placeholder="Officer name"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-success" onclick="showToast('RTO Node deployed successfully.'); bootstrap.Modal.getInstance(document.getElementById('addRtoModal')).hide();">Deploy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- RTO View Modal -->
+<div class="modal fade" id="rtoViewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="rtoViewTitle">RTO Node Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="rtoViewBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+    <div id="liveToast" class="toast align-items-center text-bg-dark border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMsg">Action completed.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/theme.js"></script>
+<script>
+    // Sidebar toggle
+    document.getElementById('sidebarCollapse').addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('active');
+    });
+
+    // Section switching
+    function showSection(id, linkEl) {
+        // Handle sections
+        document.querySelectorAll('.dashboard-section').forEach(s => {
+            s.classList.remove('active-section');
+        });
+        const target = document.getElementById(id);
+        if (target) target.classList.add('active-section');
+
+        // Handle navigation links
+        document.querySelectorAll('.nav-link-custom').forEach(link => {
+            link.classList.remove('active');
+            // If linkEl not provided, find by onclick attribute
+            if (!linkEl && link.getAttribute('onclick') && link.getAttribute('onclick').includes(id)) {
+                link.classList.add('active');
+            }
+        });
+        if (linkEl) linkEl.classList.add('active');
+
+        // Special inits
+        if (id === 'section-overview') initAqiChart();
+        
+        // Save state
+        localStorage.setItem('admin_last_section', id);
+    }
+
+    // Auto-load last section
+    document.addEventListener('DOMContentLoaded', () => {
+        const lastSection = localStorage.getItem('admin_last_section') || 'section-overview';
+        showSection(lastSection, null);
+    });
+
+    // Toast helper
+    function showToast(msg) {
+        document.getElementById('toastMsg').innerText = msg;
+        new bootstrap.Toast(document.getElementById('liveToast')).show();
+    }
+
+    // AQI Chart
+    let aqiChartInstance = null;
+    function initAqiChart() {
+        if (aqiChartInstance) return;
+        const ctx = document.getElementById('aqiChart').getContext('2d');
+        aqiChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+                datasets: [
+                    { label: 'Average City AQI', data: [150,140,165,120,130,110], borderColor: '#ff9800', backgroundColor: 'rgba(255,152,0,0.1)', borderWidth: 2, fill: true, tension: 0.4 },
+                    { label: 'PUC Compliance (%)', data: [75,78,76,85,88,92], borderColor: '#2e7d32', backgroundColor: 'rgba(46,125,50,0.1)', borderWidth: 2, fill: true, tension: 0.4 }
+                ]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+        });
+    }
+
+    // Trigger alert
+    function triggerAlert() {
+        const msg = document.getElementById('alertMsg').value.trim();
+        const type = document.getElementById('alertType').value;
+        if (!msg) { showToast('Please enter an alert message.'); return; }
+        showToast(`[${type}] Alert broadcasted: "${msg}"`);
+        document.getElementById('alertMsg').value = '';
+    }
+
+    // Save tax rates
+    function saveTaxRates() {
+        const inputs = document.querySelectorAll('#section-control input[type="number"]');
+        let valid = true;
+        inputs.forEach(input => {
+            const val = parseFloat(input.value);
+            if (isNaN(val) || val < 0 || val > 50) {
+                valid = false;
+                input.classList.add('is-invalid');
+            } else {
+                input.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!valid) {
+            showToast('Please enter valid tax rates between 0% and 50%.');
+            return;
+        }
+        showToast('Tax rates committed to state database.');
+    }
+
+    // View RTO
+    function viewRto(id, region) {
+        document.getElementById('rtoViewTitle').innerText = `Node Status: ${id}`;
+        document.getElementById('rtoViewBody').innerHTML = `
+            <div class="p-2">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted small fw-bold">Region</span>
+                    <span class="fw-semibold">${region}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted small fw-bold">Active Connections</span>
+                    <span class="text-success fw-bold">128 Endpoints</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted small fw-bold">Sync Latency</span>
+                    <span class="badge bg-success bg-opacity-10 text-success">14ms</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted small fw-bold">Uptime</span>
+                    <span class="fw-semibold">14d 2h 11m</span>
+                </div>
+                <hr class="my-4 opacity-10">
+                <button class="btn btn-primary btn-sm w-100 rounded-pill" onclick="showToast('Initiating node diagnostics...')">Run Diagnostics</button>
+            </div>
+        `;
+        new bootstrap.Modal(document.getElementById('rtoViewModal')).show();
+    }
+
+    // Edit user
+    function editUser(name, role, location) {
+        document.getElementById('editName').value = name;
+        document.getElementById('editRole').value = role;
+        document.getElementById('editLocation').value = location;
+        new bootstrap.Modal(document.getElementById('editUserModal')).show();
+    }
+
+    // Toggle user status
+    function toggleUser(email) {
+        fetch(`/api/users/toggle/${email}`, { method: 'POST' })
+        .then(response => {
+            if (response.ok) return response.json();
+            throw new Error('Failed to toggle status');
+        })
+        .then(data => {
+            showToast(data.message);
+            setTimeout(() => location.reload(), 1000);
+        })
+        .catch(error => showToast('Error: ' + error.message));
+    }
+
+    // Delete user
+    function deleteUser(email) {
+        if(confirm('Are you sure you want to delete ' + email + '?')) {
+            fetch(`/api/users/${email}`, { method: 'DELETE' })
+            .then(response => {
+                if (response.ok) return response.json();
+                throw new Error('Failed to delete user');
+            })
+            .then(data => {
+                showToast(data.message);
+                setTimeout(() => location.reload(), 1000);
+            })
+            .catch(error => showToast('Error: ' + error.message));
+        }
+    }
+
+    // Add user
+    function addUser() {
+        const fullName = document.getElementById('add-full-name').value;
+        const email = document.getElementById('add-email').value;
+        const aadhaar = document.getElementById('add-aadhaar').value;
+        const role = document.getElementById('add-role').value;
+
+        if (!fullName || !email || !aadhaar) {
+            showToast('All fields are required.');
+            return;
+        }
+        
+        if (!/^\S+@\S+\.\S+$/.test(email)) {
+            showToast('Please enter a valid email address.');
+            return;
+        }
+
+        if (!/^\d{12}$/.test(aadhaar)) {
+            showToast('Aadhaar must be a 12-digit number.');
+            return;
+        }
+
+        fetch('/api/users/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                fullName: fullName,
+                email: email,
+                aadhaarNumber: aadhaar,
+                role: role
+            })
+        })
+        .then(response => {
+            if (response.ok) return response.json();
+            return response.json().then(err => { throw new Error(err.message || 'Failed to add user') });
+        })
+        .then(data => {
+            showToast(data.message);
+            bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
+            setTimeout(() => location.reload(), 1500);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error: ' + error.message);
+        });
+    }
+
+    // Generic table filter
+    function filterTable(inputId, tableBodyId) {
+        const input = document.getElementById(inputId);
+        const filter = input.value.toLowerCase();
+        const tbody = document.getElementById(tableBodyId);
+        const rows = tbody.getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            let text = rows[i].textContent.toLowerCase();
+            rows[i].style.display = text.includes(filter) ? '' : 'none';
+        }
+    }
+
+    // View RTO node
+    function viewRto(id, location) {
+        document.getElementById('rtoViewTitle').innerText = id + ' — ' + location;
+        document.getElementById('rtoViewBody').innerHTML = `
+            <div class="row g-2 small">
+                <div class="col-6"><strong>Node ID:</strong> ${id}</div>
+                <div class="col-6"><strong>Location:</strong> ${location}</div>
+                <div class="col-6"><strong>Applications Today:</strong> 34</div>
+                <div class="col-6"><strong>Approved:</strong> 28</div>
+                <div class="col-6"><strong>Pending:</strong> 6</div>
+                <div class="col-6"><strong>Revenue:</strong> ₹1.2L</div>
+            </div>`;
+        new bootstrap.Modal(document.getElementById('rtoViewModal')).show();
+    }
+
+    // Init overview chart on load
+    initAqiChart();
+</script>
+</body>
+</html>

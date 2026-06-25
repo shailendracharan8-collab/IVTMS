@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTO Officer Dashboard - IVTMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Sidebar -->
+  <nav id="sidebar">
+    <div class="sidebar-header bg-primary">
+      <i class="bi bi-shield-check text-white fs-3"></i>
+      <h4 class="mb-0 fw-bold text-white">IVTMS RTO</h4>
+    </div>
+    <ul class="list-unstyled components">
+      <li class="active" id="nav-command">
+        <a href="#" onclick="showSection('section-command',this);return false;"><i class="bi bi-grid-1x2"></i> Command Center</a>
+      </li>
+      <li id="nav-applications">
+        <a href="#" onclick="showSection('section-applications',this);return false;"><i class="bi bi-inboxes"></i> Applications <span class="badge bg-danger ms-auto">12</span></a>
+      </li>
+      <li id="nav-fraud">
+        <a href="#" onclick="showSection('section-fraud',this);return false;"><i class="bi bi-shield-exclamation"></i> Fraud Claims</a>
+      </li>
+      <li id="nav-database">
+        <a href="#" onclick="showSection('section-database',this);return false;"><i class="bi bi-search"></i> Vehicle Database</a>
+      </li>
+      <li id="nav-permits">
+        <a href="#" onclick="showSection('section-permits',this);return false;"><i class="bi bi-card-checklist"></i> Permits</a>
+      </li>
+      <li class="mt-5 border-top pt-3" id="nav-settings">
+        <a href="#" onclick="showSection('section-settings',this);return false;"><i class="bi bi-gear"></i> Settings</a>
+      </li>
+      <li>
+        <a href="login.html" class="text-danger"><i class="bi bi-box-arrow-right"></i> Logout</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Page Content -->
+  <div id="content">
+
+    <!-- Top Navbar -->
+    <div class="top-navbar">
+      <button type="button" id="sidebarCollapse" class="btn btn-outline-primary d-md-none">
+        <i class="bi bi-list"></i>
+      </button>
+      <div class="d-none d-md-block input-group shadow-sm" style="max-width:400px;">
+        <input type="text" id="quickSearchInput" class="form-control border-0" placeholder="Quick Search RC Number (e.g. MH12AB1234)">
+        <button class="btn btn-primary" onclick="quickSearch()"><i class="bi bi-search"></i></button>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <button id="theme-toggle" class="btn btn-outline-secondary rounded-circle px-2 py-1" style="border:none;" title="Toggle Theme">
+          <i class="bi bi-moon-stars-fill"></i>
+        </button>
+        <div class="notification-bell" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#notifModal">
+          <i class="bi bi-bell"></i>
+          <span class="badge rounded-pill bg-danger">5</span>
+        </div>
+        <div class="dropdown">
+          <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+            <img src="https://ui-avatars.com/api/?name=Officer+Raj&background=1976d2&color=fff" width="32" height="32" class="rounded-circle me-2">
+            <strong>Officer Raj (Pune RTO)</strong>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow">
+            <li><a class="dropdown-item" href="#" onclick="showSection('section-settings',null);return false;"><i class="bi bi-person me-2"></i>Profile</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="login.html"><i class="bi bi-box-arrow-right me-2"></i>Sign out</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- End Navbar -->
+
+    <div class="container-fluid p-4">
+
+      <!-- ===== COMMAND CENTER ===== -->
+      <div id="section-command">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+          <div>
+            <h2 class="fw-bold mb-1">RTO Command Center</h2>
+            <p class="text-muted mb-0">Overview of applications, registrations, and enforcement operations.</p>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">Today</button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item active" href="#">Today</a></li>
+              <li><a class="dropdown-item" href="#">This Week</a></li>
+              <li><a class="dropdown-item" href="#">This Month</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="row g-4 mb-4">
+          <div class="col-sm-6 col-lg-3">
+            <div class="card h-100 p-3 border-start border-warning border-4" style="cursor:pointer;" onclick="showSection('section-applications',null)">
+              <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:.8rem;">Pending Applications</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <h2 class="fw-bold mb-0">124</h2>
+                <i class="bi bi-hourglass-split text-warning fs-3"></i>
+              </div>
+              <small class="text-muted mt-1">+8 since yesterday</small>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="card h-100 p-3 border-start border-success border-4">
+              <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:.8rem;">Approved Today</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <h2 class="fw-bold mb-0">87</h2>
+                <i class="bi bi-check-circle text-success fs-3"></i>
+              </div>
+              <small class="text-muted mt-1">Target: 100/day</small>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="card h-100 p-3 border-start border-danger border-4">
+              <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:.8rem;">Rejected Today</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <h2 class="fw-bold mb-0">12</h2>
+                <i class="bi bi-x-circle text-danger fs-3"></i>
+              </div>
+              <small class="text-muted mt-1">Mostly incomplete docs</small>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="card h-100 p-3 border-start border-primary border-4 bg-primary text-white">
+              <p class="mb-1 fw-semibold text-uppercase" style="font-size:.8rem;opacity:.85;">Revenue Collected</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <h2 class="fw-bold mb-0">&#8377;4.2L</h2>
+                <i class="bi bi-wallet2 fs-3"></i>
+              </div>
+              <small style="opacity:.8;">Tax collected today</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Application Queue + Fraud Panel -->
+        <div class="row g-4">
+          <div class="col-lg-8">
+            <div class="card p-4 h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Application Queue</h5>
+                <a href="#" class="text-decoration-none small" onclick="showSection('section-applications',null);return false;">View All</a>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light" style="font-size:.85rem;">
+                    <tr><th>App ID</th><th>Applicant</th><th>Type</th><th>Submitted</th><th>Action</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="fw-bold text-primary">APP-8942</td><td>Rajesh Kumar</td><td>New Registration</td><td>Today, 10:30 AM</td>
+                      <td>
+                        <button class="btn btn-sm btn-success px-2 me-1" title="Approve" onclick="approveApp(this,'APP-8942')"><i class="bi bi-check-lg"></i></button>
+                        <button class="btn btn-sm btn-danger px-2 me-1" title="Reject" onclick="rejectApp(this,'APP-8942')"><i class="bi bi-x-lg"></i></button>
+                        <button class="btn btn-sm btn-outline-secondary px-2" title="View" onclick="viewApp('APP-8942','Rajesh Kumar','New Registration','Today, 10:30 AM','Pending')"><i class="bi bi-three-dots"></i></button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold text-primary">APP-8943</td><td>Sita Patil</td><td>Ownership Transfer</td><td>Today, 09:15 AM</td>
+                      <td>
+                        <button class="btn btn-sm btn-success px-2 me-1" title="Approve" onclick="approveApp(this,'APP-8943')"><i class="bi bi-check-lg"></i></button>
+                        <button class="btn btn-sm btn-danger px-2 me-1" title="Reject" onclick="rejectApp(this,'APP-8943')"><i class="bi bi-x-lg"></i></button>
+                        <button class="btn btn-sm btn-outline-secondary px-2" title="View" onclick="viewApp('APP-8943','Sita Patil','Ownership Transfer','Today, 09:15 AM','Pending')"><i class="bi bi-three-dots"></i></button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold text-primary">APP-8941</td><td>ABC Logistics</td><td>Commercial Permit</td><td>Yesterday</td>
+                      <td>
+                        <button class="btn btn-sm btn-success px-2 me-1" title="Approve" onclick="approveApp(this,'APP-8941')"><i class="bi bi-check-lg"></i></button>
+                        <button class="btn btn-sm btn-danger px-2 me-1" title="Reject" onclick="rejectApp(this,'APP-8941')"><i class="bi bi-x-lg"></i></button>
+                        <button class="btn btn-sm btn-outline-secondary px-2" title="View" onclick="viewApp('APP-8941','ABC Logistics','Commercial Permit','Yesterday','Pending')"><i class="bi bi-three-dots"></i></button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card p-4 h-100 border-danger border-opacity-50">
+              <div class="d-flex align-items-center mb-3">
+                <i class="bi bi-shield-exclamation text-danger fs-4 me-2"></i>
+                <h5 class="fw-bold mb-0 text-danger">Fraud / Flagged</h5>
+              </div>
+              <div class="p-3 mb-3 bg-light rounded d-flex justify-content-between align-items-center border-start border-danger border-3">
+                <div><h6 class="fw-bold mb-1">MH-14-GH-5555</h6><p class="mb-0 text-muted small">Stolen vehicle reported</p></div>
+                <button class="btn btn-sm btn-danger" onclick="reviewFraud('MH-14-GH-5555','Stolen vehicle reported')">Review</button>
+              </div>
+              <div class="p-3 mb-3 bg-light rounded d-flex justify-content-between align-items-center border-start border-warning border-3">
+                <div><h6 class="fw-bold mb-1">MH-12-KL-9999</h6><p class="mb-0 text-muted small">Fake insurance claim</p></div>
+                <button class="btn btn-sm btn-warning text-white" onclick="reviewFraud('MH-12-KL-9999','Fake insurance claim')">Review</button>
+              </div>
+              <button class="btn btn-outline-danger w-100 mt-auto" onclick="showSection('section-fraud',null)">View All Flags (14)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END COMMAND CENTER -->
+
+      <!-- ===== APPLICATIONS ===== -->
+      <div id="section-applications" class="d-none">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+          <div>
+            <h2 class="fw-bold mb-1">Applications</h2>
+            <p class="text-muted mb-0">Review and process all pending vehicle applications.</p>
+          </div>
+          <span class="badge bg-danger fs-6">12 Pending</span>
+        </div>
+        <div class="card p-4">
+          <div class="d-flex gap-2 mb-3 flex-wrap">
+            <input type="text" class="form-control" style="max-width:240px;" placeholder="Search App ID or Name...">
+            <select class="form-select" style="max-width:180px;">
+              <option>All Types</option>
+              <option>New Registration</option>
+              <option>Ownership Transfer</option>
+              <option>Commercial Permit</option>
+              <option>RC Renewal</option>
+            </select>
+            <select class="form-select" style="max-width:150px;">
+              <option>All Status</option>
+              <option>Pending</option>
+              <option>Approved</option>
+              <option>Rejected</option>
+            </select>
+            <button class="btn btn-outline-secondary"><i class="bi bi-filter"></i> Filter</button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light" style="font-size:.85rem;">
+                <tr><th>App ID</th><th>Applicant</th><th>Type</th><th>Submitted</th><th>Status</th><th>Action</th></tr>
+              </thead>
+              <tbody id="applicationsTableBody">
+                <tr>
+                  <td class="fw-bold text-primary">APP-8942</td><td>Rajesh Kumar</td><td>New Registration</td><td>Today, 10:30 AM</td>
+                  <td><span class="badge bg-warning text-dark">Pending</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-success px-2 me-1" title="Approve" onclick="approveApp(this,'APP-8942')"><i class="bi bi-check-lg"></i></button>
+                    <button class="btn btn-sm btn-danger px-2 me-1" title="Reject" onclick="rejectApp(this,'APP-8942')"><i class="bi bi-x-lg"></i></button>
+                    <button class="btn btn-sm btn-outline-secondary px-2" title="View" onclick="viewApp('APP-8942','Rajesh Kumar','New Registration','Today, 10:30 AM','Pending')"><i class="bi bi-three-dots"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-primary">APP-8943</td><td>Sita Patil</td><td>Ownership Transfer</td><td>Today, 09:15 AM</td>
+                  <td><span class="badge bg-warning text-dark">Pending</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-success px-2 me-1" title="Approve" onclick="approveApp(this,'APP-8943')"><i class="bi bi-check-lg"></i></button>
+                    <button class="btn btn-sm btn-danger px-2 me-1" title="Reject" onclick="rejectApp(this,'APP-8943')"><i class="bi bi-x-lg"></i></button>
+                    <button class="btn btn-sm btn-outline-secondary px-2" title="View" onclick="viewApp('APP-8943','Sita Patil','Ownership Transfer','Today, 09:15 AM','Pending')"><i class="bi bi-three-dots"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-primary">APP-8941</td><td>ABC Logistics</td><td>Commercial Permit</td><td>Yesterday</td>
+                  <td><span class="badge bg-warning text-dark">Pending</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-success px-2 me-1" title="Approve" onclick="approveApp(this,'APP-8941')"><i class="bi bi-check-lg"></i></button>
+                    <button class="btn btn-sm btn-danger px-2 me-1" title="Reject" onclick="rejectApp(this,'APP-8941')"><i class="bi bi-x-lg"></i></button>
+                    <button class="btn btn-sm btn-outline-secondary px-2" title="View" onclick="viewApp('APP-8941','ABC Logistics','Commercial Permit','Yesterday','Pending')"><i class="bi bi-three-dots"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-primary">APP-8940</td><td>Priya Sharma</td><td>RC Renewal</td><td>Yesterday</td>
+                  <td><span class="badge bg-success">Approved</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-secondary px-2" title="View" onclick="viewApp('APP-8940','Priya Sharma','RC Renewal','Yesterday','Approved')"><i class="bi bi-three-dots"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-primary">APP-8939</td><td>Mohan Das</td><td>New Registration</td><td>27 Apr</td>
+                  <td><span class="badge bg-danger">Rejected</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-secondary px-2" title="View" onclick="viewApp('APP-8939','Mohan Das','New Registration','27 Apr','Rejected')"><i class="bi bi-three-dots"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- END APPLICATIONS -->
+
+      <!-- ===== FRAUD CLAIMS ===== -->
+      <div id="section-fraud" class="d-none">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+          <div>
+            <h2 class="fw-bold mb-1">Fraud Claims</h2>
+            <p class="text-muted mb-0">Flagged vehicles and suspicious activity reports.</p>
+          </div>
+          <span class="badge bg-danger fs-6">14 Active Flags</span>
+        </div>
+        <div class="row g-4 mb-4">
+          <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 border-start border-danger border-4 h-100">
+              <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:.8rem;">Stolen Vehicles</p>
+              <h2 class="fw-bold mb-0">6</h2>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 border-start border-warning border-4 h-100">
+              <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:.8rem;">Fake Insurance</p>
+              <h2 class="fw-bold mb-0">4</h2>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 border-start border-primary border-4 h-100">
+              <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:.8rem;">Duplicate RC</p>
+              <h2 class="fw-bold mb-0">3</h2>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 border-start border-secondary border-4 h-100">
+              <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:.8rem;">Other Flags</p>
+              <h2 class="fw-bold mb-0">1</h2>
+            </div>
+          </div>
+        </div>
+        <div class="card p-4">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light" style="font-size:.85rem;">
+                <tr><th>Vehicle No.</th><th>Flag Type</th><th>Reported By</th><th>Date</th><th>Severity</th><th>Action</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="fw-bold">MH-14-GH-5555</td><td>Stolen Vehicle</td><td>Police Station, Pune</td><td>28 Apr</td>
+                  <td><span class="badge bg-danger">High</span></td>
+                  <td><button class="btn btn-sm btn-danger" onclick="reviewFraud('MH-14-GH-5555','Stolen vehicle reported')">Review</button></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">MH-12-KL-9999</td><td>Fake Insurance</td><td>Insurance Dept.</td><td>28 Apr</td>
+                  <td><span class="badge bg-warning text-dark">Medium</span></td>
+                  <td><button class="btn btn-sm btn-warning text-white" onclick="reviewFraud('MH-12-KL-9999','Fake insurance claim')">Review</button></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">MH-09-AB-1122</td><td>Duplicate RC</td><td>RTO Mumbai</td><td>27 Apr</td>
+                  <td><span class="badge bg-danger">High</span></td>
+                  <td><button class="btn btn-sm btn-danger" onclick="reviewFraud('MH-09-AB-1122','Duplicate RC detected')">Review</button></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">MH-11-ZZ-4433</td><td>Fake Insurance</td><td>Citizen Report</td><td>27 Apr</td>
+                  <td><span class="badge bg-warning text-dark">Medium</span></td>
+                  <td><button class="btn btn-sm btn-warning text-white" onclick="reviewFraud('MH-11-ZZ-4433','Fake insurance suspected')">Review</button></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">MH-14-XY-7788</td><td>Stolen Vehicle</td><td>Police Station, Nashik</td><td>26 Apr</td>
+                  <td><span class="badge bg-danger">High</span></td>
+                  <td><button class="btn btn-sm btn-danger" onclick="reviewFraud('MH-14-XY-7788','Stolen vehicle reported')">Review</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- END FRAUD CLAIMS -->
+
+      <!-- ===== VEHICLE DATABASE ===== -->
+      <div id="section-database" class="d-none">
+        <h2 class="fw-bold mb-1">Vehicle Database</h2>
+        <p class="text-muted mb-4">Search and view complete vehicle registration records.</p>
+        <div class="card p-4 mb-4">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-5">
+              <label class="form-label fw-semibold">Search by RC Number</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="dbSearchInput" placeholder="e.g. MH-12-AB-1234">
+                <button class="btn btn-primary" onclick="dbSearch()"><i class="bi bi-search me-1"></i>Search</button>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold">Filter by Type</label>
+              <select class="form-select" id="dbTypeFilter">
+                <option value="">All Types</option>
+                <option>Two-Wheeler</option>
+                <option>Four-Wheeler</option>
+                <option>Commercial</option>
+                <option>Electric</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold">Filter by Status</label>
+              <select class="form-select" id="dbStatusFilter">
+                <option value="">All Status</option>
+                <option>Active</option>
+                <option>Expired</option>
+                <option>Flagged</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="card p-4">
+          <div id="dbSearchResult" class="mb-3 d-none">
+            <div class="alert alert-info d-flex align-items-center gap-2" id="dbResultAlert"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light" style="font-size:.85rem;">
+                <tr><th>RC Number</th><th>Owner</th><th>Vehicle</th><th>Type</th><th>Reg. Date</th><th>Status</th><th>Action</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="fw-bold text-primary">MH-12-AB-1234</td><td>Rajesh Kumar</td><td>Honda City 2020</td><td>Four-Wheeler</td><td>12 Jan 2020</td>
+                  <td><span class="badge bg-success">Active</span></td>
+                  <td><button class="btn btn-sm btn-outline-primary" onclick="viewVehicle('MH-12-AB-1234','Rajesh Kumar','Honda City 2020','Four-Wheeler','12 Jan 2020','Active')"><i class="bi bi-eye"></i></button></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-primary">MH-14-XY-9876</td><td>Priya Sharma</td><td>Maruti Swift 2019</td><td>Four-Wheeler</td><td>05 Mar 2019</td>
+                  <td><span class="badge bg-success">Active</span></td>
+                  <td><button class="btn btn-sm btn-outline-primary" onclick="viewVehicle('MH-14-XY-9876','Priya Sharma','Maruti Swift 2019','Four-Wheeler','05 Mar 2019','Active')"><i class="bi bi-eye"></i></button></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-primary">MH-09-GH-1122</td><td>Mohan Das</td><td>Bajaj Pulsar 2021</td><td>Two-Wheeler</td><td>20 Jun 2021</td>
+                  <td><span class="badge bg-success">Active</span></td>
+                  <td><button class="btn btn-sm btn-outline-primary" onclick="viewVehicle('MH-09-GH-1122','Mohan Das','Bajaj Pulsar 2021','Two-Wheeler','20 Jun 2021','Active')"><i class="bi bi-eye"></i></button></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-primary">MH-14-GH-5555</td><td>Unknown</td><td>Toyota Innova 2018</td><td>Four-Wheeler</td><td>15 Aug 2018</td>
+                  <td><span class="badge bg-danger">Flagged</span></td>
+                  <td><button class="btn btn-sm btn-outline-danger" onclick="viewVehicle('MH-14-GH-5555','Unknown','Toyota Innova 2018','Four-Wheeler','15 Aug 2018','Flagged')"><i class="bi bi-eye"></i></button></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-primary">MH-11-CD-3344</td><td>ABC Logistics</td><td>Tata Truck 2017</td><td>Commercial</td><td>10 Feb 2017</td>
+                  <td><span class="badge bg-warning text-dark">Expired</span></td>
+                  <td><button class="btn btn-sm btn-outline-primary" onclick="viewVehicle('MH-11-CD-3344','ABC Logistics','Tata Truck 2017','Commercial','10 Feb 2017','Expired')"><i class="bi bi-eye"></i></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- END VEHICLE DATABASE -->
+
+      <!-- ===== PERMITS ===== -->
+      <div id="section-permits" class="d-none">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+          <div>
+            <h2 class="fw-bold mb-1">Permits</h2>
+            <p class="text-muted mb-0">Manage commercial vehicle permits and renewals.</p>
+          </div>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#issuePermitModal"><i class="bi bi-plus me-1"></i>Issue New Permit</button>
+        </div>
+        <div class="row g-4 mb-4">
+          <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 border-start border-success border-4 h-100">
+              <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:.8rem;">Active Permits</p>
+              <h2 class="fw-bold mb-0">312</h2>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 border-start border-warning border-4 h-100">
+              <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:.8rem;">Expiring This Month</p>
+              <h2 class="fw-bold mb-0">28</h2>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 border-start border-danger border-4 h-100">
+              <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:.8rem;">Expired</p>
+              <h2 class="fw-bold mb-0">14</h2>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 border-start border-primary border-4 h-100">
+              <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:.8rem;">Pending Renewal</p>
+              <h2 class="fw-bold mb-0">9</h2>
+            </div>
+          </div>
+        </div>
+        <div class="card p-4">
+          <div class="d-flex gap-2 mb-3 flex-wrap">
+            <input type="text" class="form-control" style="max-width:240px;" placeholder="Search permit or vehicle no...">
+            <select class="form-select" style="max-width:180px;">
+              <option>All Types</option>
+              <option>National Permit</option>
+              <option>State Permit</option>
+              <option>Tourist Permit</option>
+            </select>
+            <button class="btn btn-outline-secondary"><i class="bi bi-filter"></i> Filter</button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light" style="font-size:.85rem;">
+                <tr><th>Permit No.</th><th>Vehicle No.</th><th>Owner</th><th>Type</th><th>Valid Until</th><th>Status</th><th>Action</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="fw-bold text-primary">PRM-2024-001</td><td>MH-11-CD-3344</td><td>ABC Logistics</td><td>National Permit</td><td>30 Apr 2026</td>
+                  <td><span class="badge bg-warning text-dark">Expiring Soon</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-success me-1" onclick="renewPermit('PRM-2024-001')" title="Renew"><i class="bi bi-arrow-clockwise"></i></button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewPermit('PRM-2024-001','MH-11-CD-3344','ABC Logistics','National Permit','30 Apr 2026')" title="View"><i class="bi bi-eye"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-primary">PRM-2024-002</td><td>MH-12-EF-5678</td><td>XYZ Transport</td><td>State Permit</td><td>15 Dec 2026</td>
+                  <td><span class="badge bg-success">Active</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-success me-1" onclick="renewPermit('PRM-2024-002')" title="Renew"><i class="bi bi-arrow-clockwise"></i></button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewPermit('PRM-2024-002','MH-12-EF-5678','XYZ Transport','State Permit','15 Dec 2026')" title="View"><i class="bi bi-eye"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-primary">PRM-2023-089</td><td>MH-09-GH-7766</td><td>Ravi Travels</td><td>Tourist Permit</td><td>01 Jan 2026</td>
+                  <td><span class="badge bg-danger">Expired</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-success me-1" onclick="renewPermit('PRM-2023-089')" title="Renew"><i class="bi bi-arrow-clockwise"></i></button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewPermit('PRM-2023-089','MH-09-GH-7766','Ravi Travels','Tourist Permit','01 Jan 2026')" title="View"><i class="bi bi-eye"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- END PERMITS -->
+
+      <!-- ===== SETTINGS ===== -->
+      <div id="section-settings" class="d-none">
+        <h2 class="fw-bold mb-1">Settings</h2>
+        <p class="text-muted mb-4">Manage your profile and preferences.</p>
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <div class="card p-4 text-center">
+              <img src="https://ui-avatars.com/api/?name=Officer+Raj&background=1976d2&color=fff&size=100" class="rounded-circle mx-auto mb-3" width="100">
+              <h5 class="fw-bold mb-1">Officer Raj</h5>
+              <p class="text-muted mb-3">RTO Officer — Pune</p>
+              <span class="badge bg-success px-3 py-2">Active</span>
+            </div>
+          </div>
+          <div class="col-lg-8">
+            <div class="card p-4 mb-4">
+              <h6 class="fw-bold mb-3 border-bottom pb-2">Profile Details</h6>
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <label class="form-label text-muted small">Full Name</label>
+                  <input type="text" class="form-control" value="Officer Raj Deshmukh">
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label text-muted small">Officer ID</label>
+                  <input type="text" class="form-control" value="RTO-PN-01-OFF" readonly>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label text-muted small">Email</label>
+                  <input type="email" class="form-control" value="raj.deshmukh@ivtms.gov.in">
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label text-muted small">Phone</label>
+                  <input type="text" class="form-control" value="+91 98765 00001">
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label text-muted small">RTO Office</label>
+                  <input type="text" class="form-control" value="Pune RTO" readonly>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label text-muted small">New Password</label>
+                  <input type="password" class="form-control" placeholder="Leave blank to keep current">
+                </div>
+                <div class="col-12">
+                  <button class="btn btn-primary" onclick="showToast('Profile updated successfully.')">Save Changes</button>
+                </div>
+              </div>
+            </div>
+            <div class="card p-4">
+              <h6 class="fw-bold mb-3 border-bottom pb-2">Preferences</h6>
+              <div class="mb-3 d-flex justify-content-between align-items-center">
+                <span>Dark Mode</span>
+                <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="darkModeToggle" onchange="document.getElementById('theme-toggle').click()"></div>
+              </div>
+              <div class="mb-3 d-flex justify-content-between align-items-center">
+                <span>Email Notifications</span>
+                <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" checked></div>
+              </div>
+              <div class="mb-3 d-flex justify-content-between align-items-center">
+                <span>SMS Alerts for Fraud Flags</span>
+                <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" checked></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END SETTINGS -->
+
+    </div><!-- end container-fluid -->
+  </div><!-- end #content -->
+</div><!-- end .wrapper -->
+
+<!-- ===== MODALS ===== -->
+
+<!-- Notification Modal -->
+<div class="modal fade" id="notifModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-bell-fill me-2"></i>Notifications</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div class="list-group list-group-flush">
+          <div class="list-group-item px-4 py-3"><div class="d-flex gap-3"><i class="bi bi-hourglass-split text-warning fs-5 mt-1"></i><div><p class="mb-1 fw-semibold">12 applications awaiting review</p><small class="text-muted">Today, 10:00 AM</small></div></div></div>
+          <div class="list-group-item px-4 py-3"><div class="d-flex gap-3"><i class="bi bi-shield-exclamation text-danger fs-5 mt-1"></i><div><p class="mb-1 fw-semibold">New fraud flag: MH-14-GH-5555</p><small class="text-muted">Today, 09:45 AM</small></div></div></div>
+          <div class="list-group-item px-4 py-3"><div class="d-flex gap-3"><i class="bi bi-card-checklist text-primary fs-5 mt-1"></i><div><p class="mb-1 fw-semibold">Permit PRM-2024-001 expiring soon</p><small class="text-muted">Today, 09:00 AM</small></div></div></div>
+          <div class="list-group-item px-4 py-3"><div class="d-flex gap-3"><i class="bi bi-check-circle text-success fs-5 mt-1"></i><div><p class="mb-1 fw-semibold">APP-8940 approved successfully</p><small class="text-muted">Yesterday, 04:30 PM</small></div></div></div>
+          <div class="list-group-item px-4 py-3"><div class="d-flex gap-3"><i class="bi bi-info-circle text-secondary fs-5 mt-1"></i><div><p class="mb-1 fw-semibold">System maintenance scheduled</p><small class="text-muted">Yesterday, 02:00 PM</small></div></div></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Application View Modal -->
+<div class="modal fade" id="appViewModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-file-earmark-text me-2"></i>Application Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="appViewBody"></div>
+      <div class="modal-footer" id="appViewFooter"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Fraud Review Modal -->
+<div class="modal fade" id="fraudModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="bi bi-shield-exclamation me-2"></i>Fraud Review</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="fraudModalBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-warning text-white" onclick="showToast('Case escalated to senior officer.');bootstrap.Modal.getInstance(document.getElementById('fraudModal')).hide();">Escalate</button>
+        <button class="btn btn-danger" onclick="showToast('Vehicle blacklisted.');bootstrap.Modal.getInstance(document.getElementById('fraudModal')).hide();">Blacklist Vehicle</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Vehicle View Modal -->
+<div class="modal fade" id="vehicleModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-car-front me-2"></i>Vehicle Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="vehicleModalBody"></div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Permit View Modal -->
+<div class="modal fade" id="permitModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-card-checklist me-2"></i>Permit Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="permitModalBody"></div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Issue Permit Modal -->
+<div class="modal fade" id="issuePermitModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Issue New Permit</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-12"><label class="form-label">Vehicle RC Number</label><input type="text" class="form-control" placeholder="e.g. MH-12-AB-1234"></div>
+          <div class="col-12"><label class="form-label">Owner Name</label><input type="text" class="form-control" placeholder="Enter owner name"></div>
+          <div class="col-sm-6"><label class="form-label">Permit Type</label>
+            <select class="form-select"><option>National Permit</option><option>State Permit</option><option>Tourist Permit</option></select>
+          </div>
+          <div class="col-sm-6"><label class="form-label">Valid Until</label><input type="date" class="form-control"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" onclick="showToast('Permit issued successfully.');bootstrap.Modal.getInstance(document.getElementById('issuePermitModal')).hide();">Issue Permit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Search Modal -->
+<div class="modal fade" id="quickSearchModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-search me-2"></i>Search Result</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="quickSearchBody"></div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+  <div id="liveToast" class="toast align-items-center text-bg-dark border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMsg">Action completed.</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/theme.js"></script>
+<script>
+  // Sidebar toggle (mobile)
+  document.getElementById('sidebarCollapse').addEventListener('click', function () {
+    document.getElementById('sidebar').classList.toggle('active');
+  });
+
+  // Section switching
+  const sections = ['section-command','section-applications','section-fraud','section-database','section-permits','section-settings'];
+
+  function showSection(id, linkEl) {
+    sections.forEach(s => document.getElementById(s).classList.add('d-none'));
+    document.getElementById(id).classList.remove('d-none');
+    document.querySelectorAll('#sidebar li').forEach(li => li.classList.remove('active'));
+    if (linkEl) {
+      linkEl.closest('li').classList.add('active');
+    } else {
+      // highlight matching nav item by section id
+      const map = {
+        'section-command': 'nav-command',
+        'section-applications': 'nav-applications',
+        'section-fraud': 'nav-fraud',
+        'section-database': 'nav-database',
+        'section-permits': 'nav-permits',
+        'section-settings': 'nav-settings'
+      };
+      const navId = map[id];
+      if (navId) document.getElementById(navId).classList.add('active');
+    }
+  }
+
+  // Toast helper
+  function showToast(msg) {
+    document.getElementById('toastMsg').innerText = msg;
+    new bootstrap.Toast(document.getElementById('liveToast')).show();
+  }
+
+  // Approve application
+  function approveApp(btn, appId) {
+    const row = btn.closest('tr');
+    const badge = row.querySelector('.badge');
+    if (badge) { badge.className = 'badge bg-success'; badge.innerText = 'Approved'; }
+    row.querySelectorAll('.btn-success, .btn-danger').forEach(b => b.disabled = true);
+    showToast(appId + ' approved successfully.');
+  }
+
+  // Reject application
+  function rejectApp(btn, appId) {
+    const row = btn.closest('tr');
+    const badge = row.querySelector('.badge');
+    if (badge) { badge.className = 'badge bg-danger'; badge.innerText = 'Rejected'; }
+    row.querySelectorAll('.btn-success, .btn-danger').forEach(b => b.disabled = true);
+    showToast(appId + ' rejected.');
+  }
+
+  // View application details
+  function viewApp(id, name, type, date, status) {
+    const statusColor = status === 'Approved' ? 'success' : status === 'Rejected' ? 'danger' : 'warning';
+    document.getElementById('appViewBody').innerHTML = `
+      <div class="row g-3 small">
+        <div class="col-6"><strong>Application ID:</strong><br>${id}</div>
+        <div class="col-6"><strong>Applicant:</strong><br>${name}</div>
+        <div class="col-6"><strong>Type:</strong><br>${type}</div>
+        <div class="col-6"><strong>Submitted:</strong><br>${date}</div>
+        <div class="col-6"><strong>Status:</strong><br><span class="badge bg-${statusColor} text-${statusColor === 'warning' ? 'dark' : 'white'}">${status}</span></div>
+        <div class="col-6"><strong>RTO Office:</strong><br>Pune RTO</div>
+        <div class="col-12"><strong>Documents:</strong><br>
+          <span class="badge bg-success me-1">Aadhaar ✓</span>
+          <span class="badge bg-success me-1">Insurance ✓</span>
+          <span class="badge bg-success me-1">PUC ✓</span>
+        </div>
+      </div>`;
+    const footer = document.getElementById('appViewFooter');
+    if (status === 'Pending') {
+      footer.innerHTML = `
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-danger" onclick="showToast('${id} rejected.');bootstrap.Modal.getInstance(document.getElementById('appViewModal')).hide();">Reject</button>
+        <button class="btn btn-success" onclick="showToast('${id} approved.');bootstrap.Modal.getInstance(document.getElementById('appViewModal')).hide();">Approve</button>`;
+    } else {
+      footer.innerHTML = `<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`;
+    }
+    new bootstrap.Modal(document.getElementById('appViewModal')).show();
+  }
+
+  // Review fraud
+  function reviewFraud(vehicleNo, reason) {
+    document.getElementById('fraudModalBody').innerHTML = `
+      <div class="row g-3 small">
+        <div class="col-6"><strong>Vehicle No.:</strong><br><span class="fw-bold text-danger">${vehicleNo}</span></div>
+        <div class="col-6"><strong>Flag Reason:</strong><br>${reason}</div>
+        <div class="col-6"><strong>Reported On:</strong><br>28 Apr 2026</div>
+        <div class="col-6"><strong>Assigned To:</strong><br>Officer Raj</div>
+        <div class="col-12">
+          <label class="form-label fw-semibold mt-2">Officer Remarks</label>
+          <textarea class="form-control" rows="3" placeholder="Enter your remarks..."></textarea>
+        </div>
+      </div>`;
+    new bootstrap.Modal(document.getElementById('fraudModal')).show();
+  }
+
+  // View vehicle
+  function viewVehicle(rc, owner, vehicle, type, regDate, status) {
+    const statusColor = status === 'Active' ? 'success' : status === 'Flagged' ? 'danger' : 'warning';
+    document.getElementById('vehicleModalBody').innerHTML = `
+      <div class="row g-3 small">
+        <div class="col-6"><strong>RC Number:</strong><br><span class="fw-bold text-primary">${rc}</span></div>
+        <div class="col-6"><strong>Owner:</strong><br>${owner}</div>
+        <div class="col-6"><strong>Vehicle:</strong><br>${vehicle}</div>
+        <div class="col-6"><strong>Type:</strong><br>${type}</div>
+        <div class="col-6"><strong>Registration Date:</strong><br>${regDate}</div>
+        <div class="col-6"><strong>Status:</strong><br><span class="badge bg-${statusColor}">${status}</span></div>
+        <div class="col-6"><strong>Insurance:</strong><br><span class="badge bg-success">Valid</span></div>
+        <div class="col-6"><strong>PUC:</strong><br><span class="badge bg-success">Valid</span></div>
+      </div>`;
+    new bootstrap.Modal(document.getElementById('vehicleModal')).show();
+  }
+
+  // Vehicle database search
+  function dbSearch() {
+    const val = document.getElementById('dbSearchInput').value.trim();
+    const resultDiv = document.getElementById('dbSearchResult');
+    const alertEl = document.getElementById('dbResultAlert');
+    if (!val) { showToast('Please enter an RC number to search.'); return; }
+    resultDiv.classList.remove('d-none');
+    alertEl.innerHTML = `<i class="bi bi-check-circle-fill me-2"></i>Showing results for: <strong>${val}</strong>`;
+  }
+
+  // View permit
+  function viewPermit(permitNo, vehicleNo, owner, type, validUntil) {
+    document.getElementById('permitModalBody').innerHTML = `
+      <div class="row g-3 small">
+        <div class="col-6"><strong>Permit No.:</strong><br><span class="fw-bold text-primary">${permitNo}</span></div>
+        <div class="col-6"><strong>Vehicle No.:</strong><br>${vehicleNo}</div>
+        <div class="col-6"><strong>Owner:</strong><br>${owner}</div>
+        <div class="col-6"><strong>Permit Type:</strong><br>${type}</div>
+        <div class="col-6"><strong>Valid Until:</strong><br>${validUntil}</div>
+        <div class="col-6"><strong>Issued By:</strong><br>Pune RTO</div>
+      </div>`;
+    new bootstrap.Modal(document.getElementById('permitModal')).show();
+  }
+
+  // Renew permit
+  function renewPermit(permitNo) {
+    showToast('Renewal initiated for ' + permitNo + '.');
+  }
+
+  // Quick search
+  function quickSearch() {
+    const val = document.getElementById('quickSearchInput').value.trim();
+    if (!val) { showToast('Please enter an RC number.'); return; }
+    document.getElementById('quickSearchBody').innerHTML = `
+      <div class="row g-3 small">
+        <div class="col-12 text-center mb-2"><i class="bi bi-check-circle-fill text-success fs-3"></i><p class="fw-bold mt-2 mb-0">Vehicle Found</p></div>
+        <div class="col-6"><strong>RC Number:</strong><br><span class="text-primary fw-bold">${val.toUpperCase()}</span></div>
+        <div class="col-6"><strong>Owner:</strong><br>Rajesh Kumar</div>
+        <div class="col-6"><strong>Vehicle:</strong><br>Honda City 2020</div>
+        <div class="col-6"><strong>Status:</strong><br><span class="badge bg-success">Active</span></div>
+        <div class="col-6"><strong>Insurance:</strong><br><span class="badge bg-success">Valid</span></div>
+        <div class="col-6"><strong>PUC:</strong><br><span class="badge bg-success">Valid</span></div>
+      </div>`;
+    new bootstrap.Modal(document.getElementById('quickSearchModal')).show();
+  }
+</script>
+</body>
+</html>

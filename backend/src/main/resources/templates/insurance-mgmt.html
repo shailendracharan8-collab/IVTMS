@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Management | IVTMS</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --primary-accent: #3b82f6;
+            --bg-body: #f1f5f9;
+            --bg-sidebar: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --border-color: rgba(226, 232, 240, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --success-color: #10b981;
+            --success-bg: #d1fae5;
+            --warning-color: #f59e0b;
+            --warning-bg: #fef3c7;
+            --danger-color: #ef4444;
+            --danger-bg: #fee2e2;
+            --shadow-soft: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-body);
+            background-image: radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px; background: var(--bg-sidebar); height: 100vh; position: fixed;
+            border-right: 1px solid var(--border-color); z-index: 1000;
+        }
+
+        .main-wrapper { margin-left: 280px; padding: 2rem; }
+
+        .glass-panel {
+            background: var(--card-bg); backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem;
+            box-shadow: var(--shadow-soft); margin-bottom: 2rem;
+        }
+
+        .nav-link {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            color: var(--text-muted); text-decoration: none; border-radius: 14px;
+            font-weight: 600; transition: all 0.2s; margin: 4px 16px;
+        }
+        .nav-link:hover { background: #f8fafc; color: var(--primary-blue); }
+        .nav-link.active { background: var(--primary-blue); color: white; }
+
+        .badge-pill { padding: 6px 16px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .status-active { background: var(--success-bg); color: var(--success-color); }
+        .status-pending { background: var(--warning-bg); color: var(--warning-color); }
+        .status-expired { background: var(--danger-bg); color: var(--danger-color); }
+        .status-rejected { background: #334155; color: #f8fafc; }
+
+        .policy-card {
+            border: 1px solid var(--border-color); border-radius: 20px; padding: 1.5rem;
+            background: white; transition: all 0.3s ease;
+        }
+        .policy-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-soft); }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--primary-accent), var(--primary-blue));
+            color: white; border: none; border-radius: 12px; padding: 0.75rem 1.5rem;
+            font-weight: 700; transition: all 0.2s;
+        }
+        .btn-premium:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3); color: white; }
+
+        .expiry-countdown {
+            font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--danger-color);
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="p-4 d-flex align-items-center gap-3">
+            <div class="bg-primary text-white p-2 rounded-3"><i class="bi bi-shield-check"></i></div>
+            <h5 class="mb-0 fw-800">IVTMS</h5>
+        </div>
+        <nav class="mt-4">
+            <a href="/dashboard/user" class="nav-link"><i class="bi bi-grid-1x2"></i> Dashboard</a>
+            <a href="/insurance-mgmt" class="nav-link active"><i class="bi bi-shield-shaded"></i> Insurance</a>
+            <a href="/puc-mgmt" class="nav-link"><i class="bi bi-leaf"></i> PUC Status</a>
+            <a href="/road-tax" class="nav-link"><i class="bi bi-credit-card"></i> Road Tax</a>
+        </nav>
+    </aside>
+
+    <main class="main-wrapper">
+        <header class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h1 class="h3 fw-800 mb-1">Insurance Management</h1>
+                <p class="text-muted">Manage your vehicle insurance policies and claims</p>
+            </div>
+            <button class="btn btn-premium" data-bs-toggle="modal" data-bs-target="#addPolicyModal">
+                <i class="bi bi-plus-lg me-2"></i>Add New Policy
+            </button>
+        </header>
+
+        <div class="row g-4">
+            <!-- Insurance Stats -->
+            <div class="col-md-4">
+                <div class="glass-panel text-center">
+                    <div class="text-muted small fw-bold text-uppercase mb-2">Active Policies</div>
+                    <h2 class="display-5 fw-800 text-success" th:text="${policies.stream().filter(p -> p.status == 'VERIFIED').count()}">0</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-panel text-center">
+                    <div class="text-muted small fw-bold text-uppercase mb-2">Expiring Soon</div>
+                    <h2 class="display-5 fw-800 text-warning" th:text="${policies.stream().filter(p -> p.expiryDate != null && p.expiryDate.isBefore(T(java.time.LocalDate).now().plusDays(30)) && p.expiryDate.isAfter(T(java.time.LocalDate).now())).count()}">0</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-panel text-center">
+                    <div class="text-muted small fw-bold text-uppercase mb-2">Total Premium Paid</div>
+                    <h2 class="display-5 fw-800 text-primary">₹<span th:text="${#numbers.formatDecimal(policies.stream().mapToDouble(p -> p.premiumAmount != null ? p.premiumAmount : 0).sum(), 0, 'COMMAS', 0, 'POINT')}">0</span></h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel">
+            <h4 class="fw-800 mb-4">Your Vehicle Policies</h4>
+            <div class="row g-4">
+                <div class="col-lg-6" th:each="policy : ${policies}">
+                    <div class="policy-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="fw-800 mb-0" th:text="${policy.vehicleRegistration}">MH-12-AB-1234</h5>
+                                <p class="text-muted small" th:text="${policy.vehicleInfo}">Honda City</p>
+                            </div>
+                            <span th:class="'badge-pill ' + (${policy.status == 'VERIFIED' ? 'status-active' : (policy.status == 'EXPIRED' ? 'status-expired' : (policy.status == 'REJECTED' ? 'status-rejected' : 'status-pending'))})" 
+                                  th:text="${policy.status}">Active</span>
+                        </div>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-6">
+                                <label class="text-muted smaller fw-bold text-uppercase d-block">Provider</label>
+                                <span class="fw-bold" th:text="${policy.insuranceProvider}">HDFC ERGO</span>
+                            </div>
+                            <div class="col-6">
+                                <label class="text-muted smaller fw-bold text-uppercase d-block">Policy Type</label>
+                                <span class="fw-bold" th:text="${policy.policyType}">Comprehensive</span>
+                            </div>
+                            <div class="col-6">
+                                <label class="text-muted smaller fw-bold text-uppercase d-block">Expiry Date</label>
+                                <span th:class="'fw-bold ' + (${policy.expiryDate != null && policy.expiryDate.isBefore(T(java.time.LocalDate).now().plusDays(30)) ? 'text-danger' : ''})" 
+                                      th:text="${#temporals.format(policy.expiryDate, 'dd MMM yyyy')}">15 Jun 2024</span>
+                            </div>
+                            <div class="col-6">
+                                <label class="text-muted smaller fw-bold text-uppercase d-block">Days Left</label>
+                                <span class="expiry-countdown" 
+                                      th:if="${policy.expiryDate != null}"
+                                      th:with="days=${T(java.time.temporal.ChronoUnit).DAYS.between(T(java.time.LocalDate).now(), policy.expiryDate)}"
+                                      th:text="${days > 0 ? days + ' Days' : 'Expired'}">31 Days</span>
+                                <span class="expiry-countdown" th:if="${policy.expiryDate == null}">N/A</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1" 
+                                    th:onclick="viewDetails([[${policy.policyNumber}]], [[${policy.insuranceProvider}]], [[${#temporals.format(policy.startDate, 'dd MMM yyyy')}]], [[${#temporals.format(policy.expiryDate, 'dd MMM yyyy')}]], [[${policy.premiumAmount}]], [[${policy.status}]], [[${policy.id}]])">View Details</button>
+                            <button class="btn btn-primary btn-sm rounded-pill flex-grow-1" th:if="${policy.status == 'EXPIRED' || (policy.expiryDate != null && policy.expiryDate.isBefore(T(java.time.LocalDate).now().plusDays(30)))}" th:onclick="renewNow([[${policy.vehicleRegistration}]])">Renew Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(policies)}">
+                    <div class="bg-white p-5 rounded-4 shadow-sm border">
+                        <i class="bi bi-shield-slash display-1 text-muted mb-4"></i>
+                        <h5 class="fw-800">No Insurance Policies Found</h5>
+                        <p class="text-muted">Upload your first insurance document to get started.</p>
+                        <button class="btn btn-premium mt-3" data-bs-toggle="modal" data-bs-target="#addPolicyModal">
+                            <i class="bi bi-plus-lg me-2"></i>Add Policy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Claims Section -->
+        <div class="glass-panel" th:if="${!#lists.isEmpty(policies)}">
+            <h4 class="fw-800 mb-4">Recent Claims</h4>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr class="text-muted small text-uppercase">
+                            <th>Claim ID</th>
+                            <th>Vehicle</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="claim : ${claims}">
+                            <td class="fw-bold text-primary" th:text="${claim.claimNumber}">CLM-12345</td>
+                            <td>
+                                <div class="fw-bold" th:text="${claim.vehicleRegistration}">MH-12-AB-1234</div>
+                                <div class="small text-muted" th:text="'Policy: ' + ${claim.policyNumber}">Policy: POL-123</div>
+                            </td>
+                            <td th:text="${#temporals.format(claim.claimDate, 'dd MMM yyyy')}">10 May 2024</td>
+                            <td class="fw-bold" th:text="'₹' + ${#numbers.formatDecimal(claim.claimAmount, 0, 'COMMAS', 0, 'POINT')}">₹5,000</td>
+                            <td>
+                                <span th:class="'badge rounded-pill ' + (${claim.claimStatus == 'APPROVED' ? 'bg-success' : (claim.claimStatus == 'REJECTED' ? 'bg-danger' : 'bg-warning')})"
+                                      th:text="${claim.claimStatus}">Pending</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-light btn-sm rounded-circle" th:onclick="Swal.fire('Claim Description', [[${claim.description}]], 'info')">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(claims)}">
+                            <td colspan="6" class="text-center text-muted py-4 small">No recent claims history available.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Policy Modal -->
+    <div class="modal fade" id="addPolicyModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-panel border-0 m-0">
+                <div class="modal-header border-0">
+                    <h5 class="fw-800">Add Insurance Policy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="insuranceForm">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Vehicle</label>
+                            <select class="form-select rounded-4 p-3" id="vehicleReg" name="registrationNumber" required>
+                                <option value="" selected disabled>Select Vehicle</option>
+                                <th:block th:each="v : ${vehicles}">
+                                    <option th:value="${v.registrationNumber}" th:text="${v.registrationNumber}"></option>
+                                </th:block>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Insurance Provider</label>
+                            <input type="text" class="form-control rounded-4 p-3" id="provider" name="insuranceProvider" placeholder="e.g. LIC, HDFC ERGO, etc." required>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Policy Number</label>
+                                <input type="text" class="form-control rounded-4 p-3" id="policyNumber" name="policyNumber" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Policy Type</label>
+                                <select class="form-select rounded-4 p-3" id="policyType" name="policyType">
+                                    <option>Comprehensive</option>
+                                    <option>Third Party</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Start Date</label>
+                                <input type="date" class="form-control rounded-4 p-3" id="startDate" name="startDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Expiry Date</label>
+                                <input type="date" class="form-control rounded-4 p-3" id="expiryDate" name="expiryDate" required>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Premium Amount</label>
+                                <input type="number" class="form-control rounded-4 p-3" id="premium" name="premiumAmount" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Coverage (Sum Insured)</label>
+                                <input type="number" class="form-control rounded-4 p-3" id="coverage" name="coverageAmount">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Upload Document (PDF/Image)</label>
+                            <input type="file" class="form-control rounded-4 p-3" id="policyFile" name="file" accept=".pdf,image/*" required>
+                        </div>
+                        <button type="button" class="btn btn-premium w-100" id="submitBtn" onclick="submitPolicy()">
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            Submit for Verification
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        async function submitPolicy() {
+            const form = document.getElementById('insuranceForm');
+            const btn = document.getElementById('submitBtn');
+            const spinner = btn.querySelector('.spinner-border');
+            
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const registrationNumber = document.getElementById('vehicleReg').value;
+            const formData = new FormData();
+            
+            // Construct the policy DTO part
+            const policyData = {
+                policyNumber: document.getElementById('policyNumber').value,
+                policyType: document.getElementById('policyType').value,
+                insuranceProvider: document.getElementById('provider').value,
+                startDate: document.getElementById('startDate').value,
+                expiryDate: document.getElementById('expiryDate').value,
+                premiumAmount: parseFloat(document.getElementById('premium').value),
+                coverageAmount: parseFloat(document.getElementById('coverage').value || 0)
+            };
+
+            formData.append('policy', new Blob([JSON.stringify(policyData)], { type: 'application/json' }));
+            formData.append('file', document.getElementById('policyFile').files[0]);
+
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+
+            try {
+                const response = await fetch(`/api/insurance/policy/` + registrationNumber, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Insurance policy uploaded and sent for verification.',
+                        icon: 'success',
+                        confirmButtonColor: '#2563eb'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    const error = await response.text();
+                    throw new Error(error || 'Failed to upload policy');
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: error.message,
+                    icon: 'error',
+                    confirmButtonColor: '#2563eb'
+                });
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+            }
+        }
+
+        function viewDetails(num, provider, start, expiry, premium, status) {
+            Swal.fire({
+                title: 'Policy Details',
+                html: `
+                    <div class="text-start p-3 bg-light rounded-4">
+                        <div class="mb-2"><strong>Policy No:</strong> <span class="text-primary">${num}</span></div>
+                        <div class="mb-2"><strong>Provider:</strong> ${provider}</div>
+                        <div class="mb-2"><strong>Validity:</strong> ${start} to ${expiry}</div>
+                        <div class="mb-2"><strong>Premium:</strong> ₹${premium}</div>
+                        <div class="mb-3"><strong>Status:</strong> <span class="badge rounded-pill ${status === 'VERIFIED' ? 'bg-success' : 'bg-warning'}">${status}</span></div>
+                        <button class="btn btn-sm btn-outline-primary w-100 rounded-pill" onclick="downloadPolicy('${num}')">
+                            <i class="bi bi-download me-2"></i>Download Policy PDF
+                        </button>
+                    </div>
+                `,
+                confirmButtonColor: '#2563eb',
+                confirmButtonText: 'Close'
+            });
+        }
+
+        function downloadPolicy(num) {
+            window.location.href = `/api/insurance/download/` + num;
+        }
+
+        function renewNow(reg) {
+            document.getElementById('vehicleReg').value = reg;
+            const modal = new bootstrap.Modal(document.getElementById('addPolicyModal'));
+            modal.show();
+        }
+    </script>
+</body>
+</html>

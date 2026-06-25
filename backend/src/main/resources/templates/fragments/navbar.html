@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <nav th:fragment="main-navbar" class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-shield-check text-primary-custom" style="font-size: 1.8rem;"></i>
+                IVTMS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}" th:classappend="${requestUri == '/' ? 'active' : ''}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/services}" th:classappend="${requestUri == '/services' ? 'active' : ''}">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/about}" th:classappend="${requestUri == '/about' ? 'active' : ''}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/contact}" th:classappend="${requestUri == '/contact' ? 'active' : ''}">Contact</a></li>
+                </ul>
+                <div class="d-flex gap-2 align-items-center">
+                    <button id="theme-toggle" class="me-2 btn btn-link text-decoration-none" title="Toggle Light/Dark Mode">
+                        <i class="bi bi-moon-stars-fill"></i>
+                    </button>
+                    
+                    <!-- Not Authenticated -->
+                    <th:block th:if="${#authentication == null or #authentication.principal == 'anonymousUser'}">
+                        <a th:href="@{/login}" class="btn btn-outline-primary rounded-pill px-4 shadow-sm">Login</a>
+                        <a th:href="@{/register}" class="btn btn-primary rounded-pill px-4 shadow-sm">Register</a>
+                    </th:block>
+                    
+                    <!-- Authenticated -->
+                    <th:block th:unless="${#authentication == null or #authentication.principal == 'anonymousUser'}">
+                        <div class="dropdown">
+                            <a class="btn btn-primary rounded-pill px-4 shadow-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Dashboard
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 p-2 mt-2">
+                                <li>
+                                    <!-- From GlobalNavigationModelAdvice (SecurityContext): avoids Thymeleaf security dialect quirks -->
+                                    <a class="dropdown-item rounded-3" th:href="${dashboardHomeUrl}">Go to Console</a>
+                                </li>
+                                <li><hr class="dropdown-divider opacity-10"></li>
+                                <li>
+                                    <form th:action="@{/logout}" method="post" style="display:inline;">
+                                        <button type="submit" class="dropdown-item text-danger rounded-3">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>

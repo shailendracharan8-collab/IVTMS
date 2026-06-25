@@ -1,0 +1,71 @@
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.ctxt
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+**/.m2/
+
+# IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+.springBeans
+.sts4-cache
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+**/logs/
+**/run.err.log
+**/run.log
+
+# Binary/Zips
+*.zip
+*.tar.gz
+*.rar
+
+# Environment variables
+.env
+.env.local
+
+# ML
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*,cover
+.hypothesis/
+.pytest_cache/

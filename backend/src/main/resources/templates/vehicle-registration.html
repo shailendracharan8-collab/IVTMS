@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Registration - IVTMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        .service-hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            padding: 100px 0 80px;
+            color: #fff;
+            text-align: center;
+        }
+        .feature-icon-lg {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 50%;
+            backdrop-filter: blur(5px);
+        }
+        .step-card {
+            border: none;
+            border-radius: 1.5rem;
+            transition: all 0.3s;
+            background: var(--surface-color);
+        }
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div th:replace="~{fragments/navbar :: main-navbar}"></div>
+
+    <div class="service-hero">
+        <div class="container" data-aos="fade-up">
+            <div class="feature-icon-lg">
+                <i class="bi bi-card-heading"></i>
+            </div>
+            <h1 class="display-4 fw-bold">Vehicle Registration</h1>
+            <p class="lead text-white-50 max-w-600 mx-auto mb-0">Digitizing the way India registers vehicles. Fast, secure, and completely paperless.</p>
+            <!-- Explicit auth actions (guests often look here before the navbar) -->
+            <th:block th:if="${#authentication == null or #authentication.principal == 'anonymousUser'}">
+                <div class="d-flex flex-wrap gap-3 justify-content-center mt-4" data-aos="fade-up" data-aos-delay="100">
+                    <a th:href="@{/login}" class="btn btn-light btn-lg rounded-pill px-4 fw-semibold shadow">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                    </a>
+                    <a th:href="@{/register}" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-semibold">
+                        <i class="bi bi-person-plus me-2"></i>Register
+                    </a>
+                </div>
+            </th:block>
+            <th:block th:unless="${#authentication == null or #authentication.principal == 'anonymousUser'}">
+                <div class="d-flex flex-wrap gap-3 justify-content-center mt-4" data-aos="fade-up" data-aos-delay="100">
+                    <a th:href="${dashboardHomeUrl}" class="btn btn-light btn-lg rounded-pill px-4 fw-semibold shadow">
+                        <i class="bi bi-speedometer2 me-2"></i>Go to dashboard
+                    </a>
+                </div>
+            </th:block>
+        </div>
+    </div>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-5 align-items-center mb-5">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <h2 class="fw-bold mb-4">Why Register via IVTMS?</h2>
+                    <p class="text-muted-custom mb-4">Our unified platform connects directly with RTO databases nationwide, ensuring your registration data is always accurate and accessible. No more physical queues or manual paperwork.</p>
+                    <ul class="list-unstyled">
+                        <li class="mb-3 d-flex align-items-center gap-3">
+                            <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                            <span>Instant Digital RC generation</span>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center gap-3">
+                            <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                            <span>Real-time ownership transfer tracking</span>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center gap-3">
+                            <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                            <span>Automated renewal notifications</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-6" data-aos="fade-left">
+                    <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800" alt="Vehicle" class="img-fluid rounded-4 shadow-lg">
+                </div>
+            </div>
+
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="fw-bold">Registration Process</h2>
+            </div>
+
+            <div class="row g-4 text-center">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card step-card p-4 h-100">
+                        <div class="fw-bold display-5 text-primary-custom mb-3">01</div>
+                        <h5 class="fw-bold">Upload Documents</h5>
+                        <p class="text-muted-custom">Upload your invoice, insurance, and identity proof securely.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card step-card p-4 h-100">
+                        <div class="fw-bold display-5 text-primary-custom mb-3">02</div>
+                        <h5 class="fw-bold">Pay Fees</h5>
+                        <p class="text-muted-custom">Calculate and pay registration fees and road tax online.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card step-card p-4 h-100">
+                        <div class="fw-bold display-5 text-primary-custom mb-3">03</div>
+                        <h5 class="fw-bold">Get RC</h5>
+                        <p class="text-muted-custom">Receive your digital RC instantly and track physical delivery.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5" data-aos="fade-up">
+                <p class="text-muted-custom mb-3">New to IVTMS? Sign in or create an account to start registration.</p>
+                <th:block th:if="${#authentication == null or #authentication.principal == 'anonymousUser'}">
+                    <div class="d-flex flex-wrap gap-3 justify-content-center align-items-center">
+                        <a th:href="@{/login}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a>
+                        <a th:href="@{/register}" class="btn btn-outline-primary btn-lg rounded-pill px-5"><i class="bi bi-person-plus me-2"></i>Register</a>
+                    </div>
+                </th:block>
+                <th:block th:unless="${#authentication == null or #authentication.principal == 'anonymousUser'}">
+                    <a th:href="${dashboardHomeUrl}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm"><i class="bi bi-arrow-right-circle me-2"></i>Continue from dashboard</a>
+                </th:block>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="text-white mb-3 d-flex align-items-center gap-2"><i class="bi bi-shield-check text-white"></i> IVTMS</h5>
+                    <p class="text-secondary">Integrated Vehicle & Transport Management System is a modern initiative to digitize automotive compliance.</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="text-white mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a th:href="@{/login}">Login</a></li>
+                        <li class="mb-2"><a th:href="@{/register}">Register</a></li>
+                        <li class="mb-2"><a href="#">Terms & Conditions</a></li>
+                        <li class="mb-2"><a href="#">Privacy Policy</a></li>
+                        <li class="mb-2"><a th:href="@{/contact}">Help & Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="text-white mb-3">Contact Us</h5>
+                    <p class="text-secondary mb-1"><i class="bi bi-envelope me-2"></i> support@ivtms.gov</p>
+                    <p class="text-secondary"><i class="bi bi-telephone me-2"></i> 1800-111-2222</p>
+                </div>
+            </div>
+            <div class="border-top border-secondary mt-3 pt-3 text-center text-secondary">
+                <p class="mb-0">&copy; 2026 IVTMS Authority. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script th:src="@{/js/theme.js}"></script>
+    <script>AOS.init({ once: true });</script>
+</body>
+</html>

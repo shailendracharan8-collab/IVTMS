@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Dashboard - IVTMS</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        .dashboard-section {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .dashboard-section.active-section {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .sidebar-link {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <i class="bi bi-shield-check text-primary-custom fs-3"></i>
+                <h4 class="mb-0 fw-bold text-primary-custom">IVTMS</h4>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li class="active nav-item-link" id="nav-overview">
+                    <a class="sidebar-link" onclick="switchSection('overview')"><i class="bi bi-grid-1x2"></i> Overview</a>
+                </li>
+                <li class="nav-item-link" id="nav-vehicles">
+                    <a class="sidebar-link" onclick="switchSection('vehicles')"><i class="bi bi-car-front"></i> My Vehicles</a>
+                </li>
+                <li class="nav-item-link" id="nav-documents">
+                    <a class="sidebar-link" onclick="switchSection('documents')"><i class="bi bi-file-earmark-text"></i> Documents</a>
+                </li>
+                <li class="nav-item-link" id="nav-taxes">
+                    <a class="sidebar-link" onclick="switchSection('taxes')"><i class="bi bi-credit-card"></i> Pay Taxes</a>
+                </li>
+                <li class="nav-item-link" id="nav-permits">
+                    <a class="sidebar-link" onclick="switchSection('permits')"><i class="bi bi-envelope-paper"></i> Apply Permit</a>
+                </li>
+                <li class="mt-5 border-top pt-3">
+                    <a href="#"><i class="bi bi-gear"></i> Settings</a>
+                </li>
+                <li>
+                    <a href="login.html" class="text-danger"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            <!-- Top Navbar -->
+            <div class="top-navbar">
+                <button type="button" id="sidebarCollapse" class="btn btn-outline-primary d-md-none">
+                    <i class="bi bi-list"></i>
+                </button>
+                
+                <!-- Search -->
+                <div class="d-none d-md-block input-group" style="max-width: 300px;">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control bg-light border-start-0" placeholder="Search services...">
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <button id="theme-toggle" class="btn btn-outline-secondary rounded-circle px-2 py-1" style="border:none;" title="Toggle Theme"><i class="bi bi-moon-stars-fill"></i></button>
+                    
+                    <div class="user-profile">
+                        <!-- Notifications -->
+                    <div class="notification-bell me-3">
+                        <i class="bi bi-bell"></i>
+                        <span class="badge rounded-pill bg-danger">2</span>
+                    </div>
+                    <!-- Profile dropdown -->
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://ui-avatars.com/api/?name=John+Doe&background=0d47a1&color=fff" alt="User" width="32" height="32" class="rounded-circle me-2">
+                            <strong>John Doe</strong>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownUser1">
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><a class="dropdown-item" href="#">Activity Log</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="login.html">Sign out</a></li>
+                        </ul>
+                    </div>
+                </div>
+                </div>
+            </div> <!-- Closes top-navbar -->
+
+            <!-- Main Dashboard Content -->
+            <div class="container-fluid p-4 p-md-5">
+                
+                <!-- OVERVIEW SECTION -->
+                <div id="section-overview" class="dashboard-section active-section">
+                    <!-- Welcome & Alerts -->
+                    <div class="d-flex justify-content-between align-items-end mb-4" data-aos="fade-down">
+                        <div>
+                            <h2 class="fw-bold mb-1">Welcome back, John! 👋</h2>
+                            <p class="text-muted-custom mb-0">Here is the latest status of your registered vehicles.</p>
+                        </div>
+                        <button class="btn btn-primary shadow-sm" onclick="switchSection('vehicles')"><i class="bi bi-plus-circle me-2"></i>Add Vehicle</button>
+                    </div>
+
+                    <!-- Alert Cards -->
+                    <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center" role="alert" data-aos="fade-in" data-aos-delay="100">
+                        <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
+                        <div>
+                            <strong>Action Required:</strong> The PUC for your vehicle <b>MH-12-AB-1234</b> is expiring in 5 days. 
+                        </div>
+                        <button class="btn btn-sm btn-warning ms-auto fw-bold text-white">Renew Now</button>
+                    </div>
+
+                <!-- Dashboard Widgets -->
+                <div class="row g-4 mb-5">
+                    <!-- Total Vehicles -->
+                    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card h-100 p-3 shadow-sm card-scale">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted-custom mb-1 fw-semibold">My Vehicles</p>
+                                    <h3 class="fw-bold mb-0">2</h3>
+                                </div>
+                                <div class="widget-icon bg-light-primary">
+                                    <i class="bi bi-car-front"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Insurance Status -->
+                    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card h-100 p-3 border-bottom border-success border-4 shadow-sm card-scale">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted-custom mb-1 fw-semibold">Active Insurance</p>
+                                    <h3 class="fw-bold mb-0">2 <span class="fs-6 text-success"><i class="bi bi-check-circle-fill"></i> valid</span></h3>
+                                </div>
+                                <div class="widget-icon bg-light-success">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- PUC Status -->
+                    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+                        <div class="card h-100 p-3 border-bottom border-warning border-4 shadow-sm card-scale">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted-custom mb-1 fw-semibold">PUC Status</p>
+                                    <h3 class="fw-bold mb-0">1 <span class="fs-6 text-warning"><i class="bi bi-exclamation-circle-fill"></i> expiring</span></h3>
+                                </div>
+                                <div class="widget-icon bg-light-warning">
+                                    <i class="bi bi-wind"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tax Status -->
+                    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+                        <div class="card h-100 p-3 border-bottom border-success border-4 shadow-sm card-scale">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted-custom mb-1 fw-semibold">Road Tax</p>
+                                    <h3 class="fw-bold mb-0">Cleared</h3>
+                                </div>
+                                <div class="widget-icon bg-light-success">
+                                    <i class="bi bi-cash-coin"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- My Vehicles Table -->
+                    <div class="col-lg-8" data-aos="fade-right" data-aos-delay="200">
+                        <h5 class="fw-bold mb-3">Vehicle Directory</h5>
+                        <div class="table-responsive shadow-sm rounded-4">
+                            <table class="table table-custom table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Registration No.</th>
+                                        <th>Vehicle Name</th>
+                                        <th>RC Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="cursor: pointer;">
+                                        <td><span class="fw-bold">MH-12-AB-1234</span></td>
+                                        <td>Honda City 2020</td>
+                                        <td><span class="badge bg-success-subtle text-success px-2 py-1"><div class="status-indicator status-green me-1"></div> Active</span></td>
+                                        <td><button class="btn btn-sm btn-outline-primary rounded-pill"><i class="bi bi-eye"></i> View</button></td>
+                                    </tr>
+                                    <tr style="cursor: pointer;">
+                                        <td><span class="fw-bold">MH-14-XY-9876</span></td>
+                                        <td>Royal Enfield Classic</td>
+                                        <td><span class="badge bg-success-subtle text-success px-2 py-1"><div class="status-indicator status-green me-1"></div> Active</span></td>
+                                        <td><button class="btn btn-sm btn-outline-primary rounded-pill"><i class="bi bi-eye"></i> View</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- AQI / Eco Widget -->
+                    <div class="col-lg-4" data-aos="fade-left" data-aos-delay="300">
+                        <h5 class="fw-bold mb-3">Eco & Environment</h5>
+                        <div class="card p-4 text-center shadow-sm card-scale" style="border-radius: 1rem;">
+                            <h6 class="text-muted-custom fw-bold mb-3">Local Air Quality Index (AQI)</h6>
+                            <!-- Simulated Chart using CSS -->
+                            <div class="position-relative d-inline-block mx-auto mb-3" style="width: 120px; height: 120px;">
+                                <svg viewBox="0 0 36 36" class="circular-chart" style="width:100%; height:100%;">
+                                    <path class="circle-bg" stroke="#eee" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                    <path class="circle" stroke="#ff9800" stroke-width="3" stroke-dasharray="60, 100" stroke-dashoffset="0" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                </svg>
+                                <div class="position-absolute top-50 start-50 translate-middle">
+                                    <span class="fs-4 fw-bold text-warning">128</span>
+                                </div>
+                            </div>
+                            <p class="mb-1 fw-bold text-warning">Moderate</p>
+                            <p class="small text-muted-custom">Your City's AQI requires vehicles to have updated PUC. Keeping your vehicle maintained helps!</p>
+                            <button class="btn btn-outline-secondary btn-sm rounded-pill mt-2">Find PUC Centers</button>
+                        </div>
+                    </div>
+                </div>
+                </div> <!-- End Overview Section -->
+
+                <!-- VEHICLES SECTION (Hidden initially) -->
+                <div id="section-vehicles" class="dashboard-section p-2">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="fw-bold mb-0">My Vehicles</h2>
+                        <button class="btn btn-primary rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#linkVehicleModal"><i class="bi bi-plus-lg me-2"></i>Link New Vehicle</button>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card p-4 shadow-sm border-0 border-top border-primary border-4 rounded-4 card-scale">
+                                <div class="d-flex justify-content-between">
+                                    <h4 class="fw-bold">MH-12-AB-1234</h4>
+                                    <span class="badge bg-success mb-auto">RC Active</span>
+                                </div>
+                                <h6 class="text-secondary mb-4">Honda City 2020 • Sedan</h6>
+                                <hr>
+                                <div class="row text-center mt-3">
+                                    <div class="col-4 border-end">
+                                        <small class="text-muted d-block">Insurance</small>
+                                        <span class="text-success fw-bold"><i class="bi bi-check-circle"></i> OK</span>
+                                    </div>
+                                    <div class="col-4 border-end">
+                                        <small class="text-muted d-block">PUC</small>
+                                        <span class="text-warning fw-bold"><i class="bi bi-exclamation-triangle"></i> 5 Days</span>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Tax</small>
+                                        <span class="text-success fw-bold"><i class="bi bi-check-circle"></i> Paid</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card p-4 shadow-sm border-0 border-top border-success border-4 rounded-4 card-scale">
+                                <div class="d-flex justify-content-between">
+                                    <h4 class="fw-bold">MH-14-XY-9876</h4>
+                                    <span class="badge bg-success mb-auto">RC Active</span>
+                                </div>
+                                <h6 class="text-secondary mb-4">Royal Enfield Classic • Two-Wheeler</h6>
+                                <hr>
+                                <div class="row text-center mt-3">
+                                    <div class="col-4 border-end">
+                                        <small class="text-muted d-block">Insurance</small>
+                                        <span class="text-success fw-bold"><i class="bi bi-check-circle"></i> OK</span>
+                                    </div>
+                                    <div class="col-4 border-end">
+                                        <small class="text-muted d-block">PUC</small>
+                                        <span class="text-success fw-bold"><i class="bi bi-check-circle"></i> OK</span>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Tax</small>
+                                        <span class="text-success fw-bold"><i class="bi bi-check-circle"></i> Paid</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- End Vehicles Section -->
+
+                <!-- DOCUMENTS SECTION -->
+                <div id="section-documents" class="dashboard-section p-2">
+                    <h2 class="fw-bold mb-4">Digital Documents Vault</h2>
+                    <div class="alert alert-info border-0 shadow-sm"><i class="bi bi-shield-check me-2"></i> All documents are digitally signed and verified with Parivahan.</div>
+                    
+                    <div class="row g-4 mt-2">
+                        <div class="col-md-4">
+                            <div class="card text-center p-4 card-scale border-0 shadow-sm">
+                                <i class="bi bi-file-earmark-pdf text-danger fs-1 mb-2"></i>
+                                <h5 class="fw-bold">Registration Certificate (RC)</h5>
+                                <p class="text-muted small">MH-12-AB-1234</p>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill mt-2">Download PDF</button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center p-4 card-scale border-0 shadow-sm">
+                                <i class="bi bi-file-earmark-pdf text-danger fs-1 mb-2"></i>
+                                <h5 class="fw-bold">Insurance Policy</h5>
+                                <p class="text-muted small">Valid till Dec 2026</p>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill mt-2">Download PDF</button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center p-4 card-scale border-0 shadow-sm">
+                                <i class="bi bi-file-earmark-text text-success fs-1 mb-2"></i>
+                                <h5 class="fw-bold">PUC Certificate</h5>
+                                <p class="text-muted small">Expiring Soon</p>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill mt-2">Download PDF</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAXES SECTION -->
+                <div id="section-taxes" class="dashboard-section p-2">
+                    <h2 class="fw-bold mb-4">Road Taxes & Fees</h2>
+                    <div class="card shadow-sm border-0 rounded-4 p-4 text-center py-5">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                        <h4 class="fw-bold mt-4">All Clear!</h4>
+                        <p class="text-muted">You have no pending road taxes or challans.</p>
+                        <div>
+                            <button class="btn btn-outline-secondary rounded-pill me-2">View Payment History</button>
+                            <button class="btn btn-primary rounded-pill">Pay Challan</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PERMITS SECTION -->
+                <div id="section-permits" class="dashboard-section p-2">
+                    <h2 class="fw-bold mb-4">Commercial Permits</h2>
+                    <div class="card p-5 text-center shadow-sm border-0 rounded-4 bg-light">
+                        <i class="bi bi-truck text-secondary mb-3" style="font-size: 4rem;"></i>
+                        <h4 class="fw-bold">Apply for Transport Permits</h4>
+                        <p class="text-muted mx-auto" style="max-width: 600px;">If you own commercial vehicles, you can apply for state, national, or goods permits directly from here. Fill up the Form 48 online and skip the queue.</p>
+                        <button class="btn btn-primary rounded-pill px-5 py-2 mt-3 shadow-sm mx-auto">Start Permit Application</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Link New Vehicle Modal -->
+    <div class="modal fade" id="linkVehicleModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle me-2"></i>Link New Vehicle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Step 1: Search RC -->
+                    <div id="linkStep1">
+                        <p class="text-muted small mb-3">Enter your vehicle's Registration Certificate (RC) number to link it to your account.</p>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">RC Number</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="linkRcInput" placeholder="e.g. MH-12-AB-1234" oninput="this.value = this.value.toUpperCase()">
+                                <button class="btn btn-outline-primary" type="button" onclick="fetchRcDetails()"><i class="bi bi-search me-1"></i>Fetch</button>
+                            </div>
+                            <div id="linkRcError" class="text-danger small mt-1 d-none">Please enter a valid RC number.</div>
+                        </div>
+                        <div id="linkRcResult" class="d-none">
+                            <div class="alert alert-success border-0 p-3 mb-3">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                    <strong>Vehicle Found</strong>
+                                </div>
+                                <div class="row g-2 small">
+                                    <div class="col-6"><span class="text-muted">RC Number:</span><br><strong id="rcDisplayNo"></strong></div>
+                                    <div class="col-6"><span class="text-muted">Owner Name:</span><br><strong id="rcDisplayOwner"></strong></div>
+                                    <div class="col-6"><span class="text-muted">Vehicle:</span><br><strong id="rcDisplayVehicle"></strong></div>
+                                    <div class="col-6"><span class="text-muted">Type:</span><br><strong id="rcDisplayType"></strong></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Confirm with Chassis Number (last 6 digits)</label>
+                                <input type="text" class="form-control" id="linkChassisInput" placeholder="e.g. AB1234" maxlength="6">
+                                <div class="form-text">This is required to verify ownership.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Step 2: Success -->
+                    <div id="linkStep2" class="d-none text-center py-3">
+                        <i class="bi bi-patch-check-fill text-success" style="font-size:3.5rem;"></i>
+                        <h5 class="fw-bold mt-3 mb-1">Vehicle Linked Successfully!</h5>
+                        <p class="text-muted small" id="linkSuccessMsg"></p>
+                    </div>
+                </div>
+                <div class="modal-footer" id="linkModalFooter">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" id="linkConfirmBtn" onclick="confirmLinkVehicle()" disabled>Confirm & Link</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+        <div id="liveToast" class="toast align-items-center text-bg-dark border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMsg">Done.</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/theme.js"></script>
+    <script>
+        AOS.init({ once: true, offset: 50 });
+
+        // Sidebar Toggle
+        document.getElementById('sidebarCollapse').addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Base URL for the Java backend API
+        const API_BASE = 'http://localhost:8080/api';
+
+        // Logged-in user id (in a real app this comes from session/JWT)
+        const CURRENT_USER_ID = 1;
+
+        // Holds the fetched vehicle data between fetch and confirm steps
+        let fetchedVehicle = null;
+
+        function fetchRcDetails() {
+            const rc = document.getElementById('linkRcInput').value.trim().toUpperCase();
+            const errorEl   = document.getElementById('linkRcError');
+            const resultEl  = document.getElementById('linkRcResult');
+            const confirmBtn = document.getElementById('linkConfirmBtn');
+
+            if (!rc) {
+                errorEl.innerText = 'Please enter an RC number.';
+                errorEl.classList.remove('d-none');
+                resultEl.classList.add('d-none');
+                confirmBtn.disabled = true;
+                return;
+            }
+            errorEl.classList.add('d-none');
+
+            fetch(API_BASE + '/vehicles?rc=' + encodeURIComponent(rc))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        errorEl.innerText = 'No vehicle found with this RC number. Please check and try again.';
+                        errorEl.classList.remove('d-none');
+                        resultEl.classList.add('d-none');
+                        confirmBtn.disabled = true;
+                        fetchedVehicle = null;
+                    } else {
+                        fetchedVehicle = data;
+                        document.getElementById('rcDisplayNo').innerText      = data.rcNumber;
+                        document.getElementById('rcDisplayOwner').innerText   = data.ownerName;
+                        document.getElementById('rcDisplayVehicle').innerText = data.vehicleName;
+                        document.getElementById('rcDisplayType').innerText    = data.vehicleType;
+                        resultEl.classList.remove('d-none');
+                        confirmBtn.disabled = false;
+                    }
+                })
+                .catch(() => {
+                    errorEl.innerText = 'Could not reach the server. Please try again.';
+                    errorEl.classList.remove('d-none');
+                    resultEl.classList.add('d-none');
+                    confirmBtn.disabled = true;
+                });
+        }
+
+        function confirmLinkVehicle() {
+            const chassis    = document.getElementById('linkChassisInput').value.trim();
+            const chassisEl  = document.getElementById('linkChassisInput');
+
+            if (!chassis) {
+                chassisEl.classList.add('is-invalid');
+                return;
+            }
+            chassisEl.classList.remove('is-invalid');
+
+            const params = new URLSearchParams({
+                userId:  CURRENT_USER_ID,
+                rc:      fetchedVehicle.rcNumber,
+                chassis: chassis
+            });
+
+            fetch(API_BASE + '/vehicles/link', { method: 'POST', body: params })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        chassisEl.classList.add('is-invalid');
+                        chassisEl.nextElementSibling && chassisEl.nextElementSibling.remove();
+                        chassisEl.insertAdjacentHTML('afterend',
+                            '<div class="invalid-feedback">' + data.error + '</div>');
+                    } else {
+                        // Show success step
+                        document.getElementById('linkStep1').classList.add('d-none');
+                        document.getElementById('linkStep2').classList.remove('d-none');
+                        document.getElementById('linkSuccessMsg').innerText =
+                            fetchedVehicle.rcNumber + ' — ' + fetchedVehicle.vehicleName + ' has been linked to your account.';
+                        document.getElementById('linkModalFooter').innerHTML =
+                            '<button class="btn btn-success" data-bs-dismiss="modal" onclick="addVehicleCard(\'' +
+                            fetchedVehicle.rcNumber + '\',\'' + fetchedVehicle.vehicleName + '\')">Done</button>';
+                    }
+                })
+                .catch(() => {
+                    chassisEl.classList.add('is-invalid');
+                    chassisEl.insertAdjacentHTML('afterend',
+                        '<div class="invalid-feedback">Server error. Please try again.</div>');
+                });
+        }
+
+        function addVehicleCard(rc, vehicleName) {
+            const container = document.querySelector('#section-vehicles .row.g-4');
+            const col = document.createElement('div');
+            col.className = 'col-md-6';
+            col.innerHTML = `
+                <div class="card p-4 shadow-sm border-0 border-top border-primary border-4 rounded-4 card-scale">
+                    <div class="d-flex justify-content-between">
+                        <h4 class="fw-bold">${rc}</h4>
+                        <span class="badge bg-success mb-auto">RC Active</span>
+                    </div>
+                    <h6 class="text-secondary mb-4">${vehicleName}</h6>
+                    <hr>
+                    <div class="row text-center mt-3">
+                        <div class="col-4 border-end">
+                            <small class="text-muted d-block">Insurance</small>
+                            <span class="text-success fw-bold"><i class="bi bi-check-circle"></i> OK</span>
+                        </div>
+                        <div class="col-4 border-end">
+                            <small class="text-muted d-block">PUC</small>
+                            <span class="text-success fw-bold"><i class="bi bi-check-circle"></i> OK</span>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted d-block">Tax</small>
+                            <span class="text-success fw-bold"><i class="bi bi-check-circle"></i> Paid</span>
+                        </div>
+                    </div>
+                </div>`;
+            container.appendChild(col);
+
+            // Reset modal for next use
+            document.getElementById('linkStep1').classList.remove('d-none');
+            document.getElementById('linkStep2').classList.add('d-none');
+            document.getElementById('linkRcInput').value = '';
+            document.getElementById('linkRcResult').classList.add('d-none');
+            document.getElementById('linkChassisInput').value = '';
+            document.getElementById('linkConfirmBtn').disabled = true;
+            document.getElementById('linkModalFooter').innerHTML =
+                '<button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>' +
+                '<button class="btn btn-primary" id="linkConfirmBtn" onclick="confirmLinkVehicle()" disabled>Confirm & Link</button>';
+        }
+
+        // Dashboard Tab Navigation Logic
+        function switchSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.dashboard-section');
+            sections.forEach(sec => sec.classList.remove('active-section'));
+
+            // Show selected section
+            const targetSection = document.getElementById('section-' + sectionId);
+            if(targetSection) targetSection.classList.add('active-section');
+
+            // Update active state in sidebar
+            const links = document.querySelectorAll('.nav-item-link');
+            links.forEach(link => link.classList.remove('active'));
+            
+            const activeLink = document.getElementById('nav-' + sectionId);
+            if(activeLink) activeLink.classList.add('active');
+
+            // If on mobile, auto-collapse sidebar after click
+            if(window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

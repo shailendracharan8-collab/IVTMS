@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - IVTMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-header bg-dark">
+            <i class="bi bi-shield-lock text-white fs-3"></i>
+            <h4 class="mb-0 fw-bold text-white">IVTMS Admin</h4>
+        </div>
+        <ul class="list-unstyled components">
+            <li class="active" id="nav-overview">
+                <a href="#" onclick="showSection('section-overview', this)"><i class="bi bi-speedometer2"></i> System Overview</a>
+            </li>
+            <li id="nav-users">
+                <a href="#" onclick="showSection('section-users', this)"><i class="bi bi-people"></i> User Management</a>
+            </li>
+            <li id="nav-rto">
+                <a href="#" onclick="showSection('section-rto', this)"><i class="bi bi-diagram-3"></i> RTO Networks</a>
+            </li>
+            <li id="nav-control">
+                <a href="#" onclick="showSection('section-control', this)"><i class="bi bi-sliders"></i> Control Panel</a>
+            </li>
+            <li id="nav-logs">
+                <a href="#" onclick="showSection('section-logs', this)"><i class="bi bi-journal-text"></i> System Logs</a>
+            </li>
+            <li class="mt-5 border-top pt-3" id="nav-settings">
+                <a href="#" onclick="showSection('section-settings', this)"><i class="bi bi-gear"></i> Settings</a>
+            </li>
+            <li>
+                <a href="login.html" class="text-danger"><i class="bi bi-box-arrow-right"></i> Logout</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Page Content -->
+    <div id="content">
+        <!-- Top Navbar -->
+        <div class="top-navbar" style="background:var(--surface-color);">
+            <button type="button" id="sidebarCollapse" class="btn btn-outline-secondary d-md-none">
+                <i class="bi bi-list"></i>
+            </button>
+            <div class="d-none d-md-block fs-5 fw-bold">
+                <i class="bi bi-terminal me-1"></i> Super Admin Console
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <button id="theme-toggle" class="btn btn-outline-secondary rounded-circle px-2 py-1" style="border:none;" title="Toggle Theme">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </button>
+                <div class="notification-bell" onclick="showSection('section-logs', null)" style="cursor:pointer;">
+                    <i class="bi bi-bell"></i>
+                    <span class="badge rounded-pill bg-danger">9+</span>
+                </div>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" id="dropdownAdmin" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=212121&color=fff" alt="Admin" width="32" height="32" class="rounded-circle me-2">
+                        <strong>System Admin</strong>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownAdmin">
+                        <li><a class="dropdown-item" href="#" onclick="showSection('section-settings', null)">Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="login.html">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- End Top Navbar -->
+
+        <!-- Main Content -->
+        <div class="container-fluid p-4">
+
+            <!-- ===== SECTION: SYSTEM OVERVIEW ===== -->
+            <div id="section-overview">
+                <h2 class="fw-bold mb-1">Central System Overview</h2>
+                <p class="text-muted mb-4">Real-time statistics covering users, fleet density, and compliance rates.</p>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card bg-primary text-white p-3 h-100 border-0">
+                            <p class="mb-1 fw-semibold text-uppercase" style="font-size:0.8rem;opacity:0.8;">Total Vehicles Registered</p>
+                            <h2 class="fw-bold mb-0">1.2M</h2>
+                            <small class="opacity-75"><i class="bi bi-arrow-up-short"></i> +2.4% this month</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card bg-success text-white p-3 h-100 border-0">
+                            <p class="mb-1 fw-semibold text-uppercase" style="font-size:0.8rem;opacity:0.8;">Active Users (Citizens)</p>
+                            <h2 class="fw-bold mb-0">850K</h2>
+                            <small class="opacity-75"><i class="bi bi-arrow-up-short"></i> +1.1% this week</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card bg-warning text-dark p-3 h-100 border-0">
+                            <p class="mb-1 fw-semibold text-uppercase" style="font-size:0.8rem;opacity:0.75;">Pending Fraud Cases</p>
+                            <h2 class="fw-bold mb-0">342</h2>
+                            <small><i class="bi bi-exclamation-triangle"></i> Needs attention</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card bg-dark text-white p-3 h-100 border-0">
+                            <p class="mb-1 fw-semibold text-uppercase" style="font-size:0.8rem;opacity:0.8;">Total Tax Revenue</p>
+                            <h2 class="fw-bold mb-0">₹142Cr</h2>
+                            <small class="opacity-75"><i class="bi bi-arrow-up-short"></i> FY 2025-26</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card p-4 h-100">
+                            <h5 class="fw-bold mb-4">AQI & Emission Compliance Trend</h5>
+                            <canvas id="aqiChart" height="100"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card p-4 h-100">
+                            <h5 class="fw-bold mb-4">Quick Actions</h5>
+                            <div class="d-grid gap-3">
+                                <button class="btn btn-outline-danger d-flex justify-content-between align-items-center" onclick="showSection('section-control', null)">
+                                    <span><i class="bi bi-broadcast me-2"></i> Trigger System Alert</span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                                <button class="btn btn-outline-primary d-flex justify-content-between align-items-center" onclick="showSection('section-control', null)">
+                                    <span><i class="bi bi-percent me-2"></i> Adjust Tax Rates</span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                                <button class="btn btn-outline-success d-flex justify-content-between align-items-center" onclick="showSection('section-rto', null)">
+                                    <span><i class="bi bi-person-plus me-2"></i> Deploy New RTO Node</span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary d-flex justify-content-between align-items-center" onclick="showSection('section-users', null)">
+                                    <span><i class="bi bi-people me-2"></i> Manage Personnel</span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                            <hr class="my-3">
+                            <h6 class="fw-bold text-muted mb-3">Recent Activity</h6>
+                            <div class="small">
+                                <div class="d-flex mb-2">
+                                    <i class="bi bi-record-circle text-primary me-2 mt-1"></i>
+                                    <div><strong>Admin R. updated policy</strong><br><span class="text-muted">10 mins ago</span></div>
+                                </div>
+                                <div class="d-flex mb-2">
+                                    <i class="bi bi-record-circle text-danger me-2 mt-1"></i>
+                                    <div><strong>System blocked bulk IP</strong><br><span class="text-muted">1 hour ago</span></div>
+                                </div>
+                                <div class="d-flex">
+                                    <i class="bi bi-record-circle text-success me-2 mt-1"></i>
+                                    <div><strong>New RTO node deployed</strong><br><span class="text-muted">3 hours ago</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION: USER MANAGEMENT ===== -->
+            <div id="section-users" class="d-none">
+                <h2 class="fw-bold mb-1">User Management</h2>
+                <p class="text-muted mb-4">Manage all personnel — RTO officers, inspectors, and citizens.</p>
+                <div class="card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <div class="input-group" style="max-width:280px;">
+                            <input type="text" class="form-control" placeholder="Search by name or role...">
+                            <button class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+                        </div>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                            <i class="bi bi-plus"></i> Add User
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr><th>Name</th><th>Role</th><th>Location / Post</th><th>Status</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr>
+                                    <td><div class="d-flex align-items-center"><img src="https://ui-avatars.com/api/?name=Officer+Raj&background=1976d2&color=fff" width="30" class="rounded-circle me-2">Officer Raj</div></td>
+                                    <td>RTO Officer</td><td>Pune RTO</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1" title="Edit" onclick="editUser('Officer Raj','RTO Officer','Pune RTO')"><i class="bi bi-pencil"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Deactivate" onclick="toggleUser(this)"><i class="bi bi-slash-circle"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><div class="d-flex align-items-center"><img src="https://ui-avatars.com/api/?name=Inspector+M&background=2e7d32&color=fff" width="30" class="rounded-circle me-2">Inspector M.</div></td>
+                                    <td>PUC Inspector</td><td>PUC-PN-1049</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1" title="Edit" onclick="editUser('Inspector M.','PUC Inspector','PUC-PN-1049')"><i class="bi bi-pencil"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Deactivate" onclick="toggleUser(this)"><i class="bi bi-slash-circle"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><div class="d-flex align-items-center"><img src="https://ui-avatars.com/api/?name=Citizen+A&background=e65100&color=fff" width="30" class="rounded-circle me-2">Citizen A.</div></td>
+                                    <td>Citizen</td><td>Mumbai</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1" title="Edit" onclick="editUser('Citizen A.','Citizen','Mumbai')"><i class="bi bi-pencil"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Deactivate" onclick="toggleUser(this)"><i class="bi bi-slash-circle"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION: RTO NETWORKS ===== -->
+            <div id="section-rto" class="d-none">
+                <h2 class="fw-bold mb-1">RTO Networks</h2>
+                <p class="text-muted mb-4">All registered RTO nodes across the state.</p>
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card p-3 border-start border-primary border-4 h-100">
+                            <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:0.8rem;">Total RTO Nodes</p>
+                            <h2 class="fw-bold mb-0">48</h2>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card p-3 border-start border-success border-4 h-100">
+                            <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:0.8rem;">Online</p>
+                            <h2 class="fw-bold mb-0">45</h2>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card p-3 border-start border-danger border-4 h-100">
+                            <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:0.8rem;">Offline</p>
+                            <h2 class="fw-bold mb-0">3</h2>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card p-3 border-start border-warning border-4 h-100">
+                            <p class="text-muted mb-1 fw-semibold text-uppercase" style="font-size:0.8rem;">PUC Centers</p>
+                            <h2 class="fw-bold mb-0">214</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">RTO Node List</h5>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addRtoModal"><i class="bi bi-plus"></i> Deploy New Node</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr><th>Node ID</th><th>Location</th><th>Officer</th><th>Status</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="fw-bold text-primary">RTO-PN-01</td><td>Pune</td><td>Officer Raj</td><td><span class="badge bg-success">Online</span></td><td><button class="btn btn-sm btn-outline-secondary" onclick="viewRto('RTO-PN-01','Pune')"><i class="bi bi-eye"></i></button></td></tr>
+                                <tr><td class="fw-bold text-primary">RTO-MH-02</td><td>Mumbai</td><td>Officer Singh</td><td><span class="badge bg-success">Online</span></td><td><button class="btn btn-sm btn-outline-secondary" onclick="viewRto('RTO-MH-02','Mumbai')"><i class="bi bi-eye"></i></button></td></tr>
+                                <tr><td class="fw-bold text-primary">RTO-NK-03</td><td>Nashik</td><td>Officer Patil</td><td><span class="badge bg-danger">Offline</span></td><td><button class="btn btn-sm btn-outline-secondary" onclick="viewRto('RTO-NK-03','Nashik')"><i class="bi bi-eye"></i></button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION: CONTROL PANEL ===== -->
+            <div id="section-control" class="d-none">
+                <h2 class="fw-bold mb-1">Control Panel</h2>
+                <p class="text-muted mb-4">System-wide controls and configuration.</p>
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="card p-4">
+                            <h5 class="fw-bold mb-4"><i class="bi bi-broadcast text-danger me-2"></i>System Alerts</h5>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Alert Message</label>
+                                <textarea class="form-control" rows="3" id="alertMsg" placeholder="Enter system-wide alert message..."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Alert Type</label>
+                                <select class="form-select" id="alertType">
+                                    <option>Info</option>
+                                    <option>Warning</option>
+                                    <option>Critical</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-danger w-100" onclick="triggerAlert()"><i class="bi bi-broadcast me-2"></i>Broadcast Alert</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card p-4">
+                            <h5 class="fw-bold mb-4"><i class="bi bi-percent text-primary me-2"></i>Tax Rate Configuration</h5>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Two-Wheeler Tax (%)</label>
+                                <input type="number" class="form-control" value="6">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Four-Wheeler Tax (%)</label>
+                                <input type="number" class="form-control" value="9">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Commercial Vehicle Tax (%)</label>
+                                <input type="number" class="form-control" value="12">
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="saveTaxRates()"><i class="bi bi-save me-2"></i>Save Tax Rates</button>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card p-4">
+                            <h5 class="fw-bold mb-4"><i class="bi bi-toggles text-success me-2"></i>System Toggles</h5>
+                            <div class="row g-3">
+                                <div class="col-sm-6 col-lg-3">
+                                    <div class="d-flex justify-content-between align-items-center p-3 border rounded">
+                                        <span class="fw-semibold">Maintenance Mode</span>
+                                        <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch"></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-lg-3">
+                                    <div class="d-flex justify-content-between align-items-center p-3 border rounded">
+                                        <span class="fw-semibold">New Registrations</span>
+                                        <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" checked></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-lg-3">
+                                    <div class="d-flex justify-content-between align-items-center p-3 border rounded">
+                                        <span class="fw-semibold">Email Notifications</span>
+                                        <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" checked></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-lg-3">
+                                    <div class="d-flex justify-content-between align-items-center p-3 border rounded">
+                                        <span class="fw-semibold">Fraud Auto-Flag</span>
+                                        <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" checked></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION: SYSTEM LOGS ===== -->
+            <div id="section-logs" class="d-none">
+                <h2 class="fw-bold mb-1">System Logs</h2>
+                <p class="text-muted mb-4">Full audit trail of all system activity.</p>
+                <div class="card p-4">
+                    <div class="d-flex gap-2 mb-3 flex-wrap">
+                        <input type="text" class="form-control" style="max-width:250px;" placeholder="Search logs...">
+                        <select class="form-select" style="max-width:160px;">
+                            <option>All Types</option>
+                            <option>Info</option>
+                            <option>Warning</option>
+                            <option>Critical</option>
+                        </select>
+                        <button class="btn btn-outline-secondary"><i class="bi bi-filter"></i> Filter</button>
+                        <button class="btn btn-outline-primary ms-auto" onclick="window.print()"><i class="bi bi-download me-1"></i>Export</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" style="font-size:0.9rem;">
+                            <thead class="table-light">
+                                <tr><th>Timestamp</th><th>User</th><th>Action</th><th>IP Address</th><th>Type</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>28 Apr, 10:55 AM</td><td>Admin R.</td><td>Updated emission policy</td><td>192.168.1.1</td><td><span class="badge bg-primary">Info</span></td></tr>
+                                <tr><td>28 Apr, 09:40 AM</td><td>System</td><td>Blocked bulk IP range 45.x.x.x</td><td>Auto</td><td><span class="badge bg-danger">Critical</span></td></tr>
+                                <tr><td>28 Apr, 08:30 AM</td><td>Officer Raj</td><td>Approved APP-8942</td><td>10.0.0.5</td><td><span class="badge bg-success">Info</span></td></tr>
+                                <tr><td>27 Apr, 05:15 PM</td><td>Admin R.</td><td>Deployed RTO-NK-04 node</td><td>192.168.1.1</td><td><span class="badge bg-primary">Info</span></td></tr>
+                                <tr><td>27 Apr, 03:00 PM</td><td>System</td><td>Scheduled backup completed</td><td>Auto</td><td><span class="badge bg-success">Info</span></td></tr>
+                                <tr><td>27 Apr, 11:20 AM</td><td>Inspector M.</td><td>Generated PUC cert MH-14-XY-9876</td><td>10.0.0.8</td><td><span class="badge bg-primary">Info</span></td></tr>
+                                <tr><td>27 Apr, 09:00 AM</td><td>System</td><td>High fraud flag rate detected</td><td>Auto</td><td><span class="badge bg-warning text-dark">Warning</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION: SETTINGS ===== -->
+            <div id="section-settings" class="d-none">
+                <h2 class="fw-bold mb-1">Settings</h2>
+                <p class="text-muted mb-4">System and account configuration.</p>
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="card p-4">
+                            <h6 class="fw-bold mb-3 border-bottom pb-2">Admin Profile</h6>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label text-muted small">Full Name</label>
+                                    <input type="text" class="form-control" value="System Administrator">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-muted small">Email</label>
+                                    <input type="email" class="form-control" value="admin@ivtms.gov.in">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-muted small">New Password</label>
+                                    <input type="password" class="form-control" placeholder="Leave blank to keep current">
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn btn-dark" onclick="showToast('Profile updated successfully.')">Save Profile</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card p-4">
+                            <h6 class="fw-bold mb-3 border-bottom pb-2">System Preferences</h6>
+                            <div class="mb-3 d-flex justify-content-between align-items-center">
+                                <span>Dark Mode</span>
+                                <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="darkModeToggle" onchange="document.getElementById('theme-toggle').click()"></div>
+                            </div>
+                            <div class="mb-3 d-flex justify-content-between align-items-center">
+                                <span>Two-Factor Authentication</span>
+                                <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch"></div>
+                            </div>
+                            <div class="mb-3 d-flex justify-content-between align-items-center">
+                                <span>Session Timeout (30 min)</span>
+                                <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" checked></div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Default Language</label>
+                                <select class="form-select">
+                                    <option>English</option>
+                                    <option>Hindi</option>
+                                    <option>Marathi</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-dark" onclick="showToast('Preferences saved.')">Save Preferences</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- End Main Content -->
+    </div>
+    <!-- End Page Content -->
+</div>
+<!-- End Wrapper -->
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Add New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12"><label class="form-label">Full Name</label><input type="text" class="form-control" placeholder="Enter full name"></div>
+                    <div class="col-12"><label class="form-label">Email</label><input type="email" class="form-control" placeholder="Enter email"></div>
+                    <div class="col-sm-6"><label class="form-label">Role</label>
+                        <select class="form-select"><option value="RTO">RTO Officer</option><option value="INSPECTOR">PUC Inspector</option><option value="CITIZEN">Citizen</option></select>
+                    </div>
+                    <div class="col-sm-6"><label class="form-label">Location / Post</label><input type="text" class="form-control" placeholder="e.g. Pune RTO"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" onclick="addUser()">Add User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12"><label class="form-label">Full Name</label><input type="text" class="form-control" id="editName"></div>
+                    <div class="col-sm-6"><label class="form-label">Role</label>
+                        <select class="form-select" id="editRole"><option>RTO Officer</option><option>PUC Inspector</option><option>Citizen</option></select>
+                    </div>
+                    <div class="col-sm-6"><label class="form-label">Location / Post</label><input type="text" class="form-control" id="editLocation"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" onclick="showToast('User updated.'); bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add RTO Modal -->
+<div class="modal fade" id="addRtoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Deploy New RTO Node</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12"><label class="form-label">Node ID</label><input type="text" class="form-control" placeholder="e.g. RTO-NP-05"></div>
+                    <div class="col-12"><label class="form-label">Location</label><input type="text" class="form-control" placeholder="City / District"></div>
+                    <div class="col-12"><label class="form-label">Assigned Officer</label><input type="text" class="form-control" placeholder="Officer name"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-success" onclick="showToast('RTO Node deployed successfully.'); bootstrap.Modal.getInstance(document.getElementById('addRtoModal')).hide();">Deploy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- RTO View Modal -->
+<div class="modal fade" id="rtoViewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="rtoViewTitle">RTO Node Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="rtoViewBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+    <div id="liveToast" class="toast align-items-center text-bg-dark border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMsg">Action completed.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/theme.js"></script>
+<script>
+    // Sidebar toggle
+    document.getElementById('sidebarCollapse').addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('active');
+    });
+
+    // Section switching
+    const sections = ['section-overview','section-users','section-rto','section-control','section-logs','section-settings'];
+    function showSection(id, linkEl) {
+        sections.forEach(s => document.getElementById(s).classList.add('d-none'));
+        document.getElementById(id).classList.remove('d-none');
+        document.querySelectorAll('#sidebar li').forEach(li => li.classList.remove('active'));
+        if (linkEl) linkEl.closest('li').classList.add('active');
+        if (id === 'section-overview') initAqiChart();
+    }
+
+    // Toast helper
+    function showToast(msg) {
+        document.getElementById('toastMsg').innerText = msg;
+        new bootstrap.Toast(document.getElementById('liveToast')).show();
+    }
+
+    // AQI Chart
+    let aqiChartInstance = null;
+    function initAqiChart() {
+        if (aqiChartInstance) return;
+        const ctx = document.getElementById('aqiChart').getContext('2d');
+        aqiChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+                datasets: [
+                    { label: 'Average City AQI', data: [150,140,165,120,130,110], borderColor: '#ff9800', backgroundColor: 'rgba(255,152,0,0.1)', borderWidth: 2, fill: true, tension: 0.4 },
+                    { label: 'PUC Compliance (%)', data: [75,78,76,85,88,92], borderColor: '#2e7d32', backgroundColor: 'rgba(46,125,50,0.1)', borderWidth: 2, fill: true, tension: 0.4 }
+                ]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+        });
+    }
+
+    // Trigger alert
+    function triggerAlert() {
+        const msg = document.getElementById('alertMsg').value.trim();
+        const type = document.getElementById('alertType').value;
+        if (!msg) { showToast('Please enter an alert message.'); return; }
+        showToast(`[${type}] Alert broadcasted: "${msg}"`);
+        document.getElementById('alertMsg').value = '';
+    }
+
+    // Save tax rates
+    function saveTaxRates() { showToast('Tax rates saved successfully.'); }
+
+    // Edit user
+    function editUser(name, role, location) {
+        document.getElementById('editName').value = name;
+        document.getElementById('editRole').value = role;
+        document.getElementById('editLocation').value = location;
+        new bootstrap.Modal(document.getElementById('editUserModal')).show();
+    }
+
+    // Toggle user status
+    function toggleUser(btn) {
+        const row = btn.closest('tr');
+        const badge = row.querySelector('.badge');
+        if (badge.classList.contains('bg-success')) {
+            badge.classList.replace('bg-success','bg-secondary');
+            badge.innerText = 'Inactive';
+            showToast('User deactivated.');
+        } else {
+            badge.classList.replace('bg-secondary','bg-success');
+            badge.innerText = 'Active';
+            showToast('User activated.');
+        }
+    }
+
+    // Add user
+    function addUser() {
+        showToast('New user added successfully.');
+        bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
+    }
+
+    // View RTO node
+    function viewRto(id, location) {
+        document.getElementById('rtoViewTitle').innerText = id + ' — ' + location;
+        document.getElementById('rtoViewBody').innerHTML = `
+            <div class="row g-2 small">
+                <div class="col-6"><strong>Node ID:</strong> ${id}</div>
+                <div class="col-6"><strong>Location:</strong> ${location}</div>
+                <div class="col-6"><strong>Applications Today:</strong> 34</div>
+                <div class="col-6"><strong>Approved:</strong> 28</div>
+                <div class="col-6"><strong>Pending:</strong> 6</div>
+                <div class="col-6"><strong>Revenue:</strong> ₹1.2L</div>
+            </div>`;
+        new bootstrap.Modal(document.getElementById('rtoViewModal')).show();
+    }
+
+    // Init overview chart on load
+    initAqiChart();
+</script>
+</body>
+</html>

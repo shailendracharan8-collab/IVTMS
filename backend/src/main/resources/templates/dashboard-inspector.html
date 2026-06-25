@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspector Center | IVTMS</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            /* Same as RTO Dashboard */
+            --primary-blue: #1e40af;
+            --primary-accent: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.45);
+            --bg-body: #f8fafc;
+            --bg-sidebar: #0f172a;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --sidebar-text: #94a3b8;
+            --sidebar-hover: #1e293b;
+            --sidebar-active: #3b82f6;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --glass-border: rgba(148, 163, 184, 0.25);
+            
+            --success-color: #10b981;
+            --success-bg: #d1fae5;
+            --warning-color: #f59e0b;
+            --warning-bg: #fef3c7;
+            --danger-color: #ef4444;
+            --danger-bg: #fee2e2;
+            --info-color: #3b82f6;
+            --info-bg: #dbeafe;
+            --purple-color: #8b5cf6;
+            --purple-bg: #ede9fe;
+            --shadow-soft: 0 4px 24px rgba(15, 23, 42, 0.08);
+            --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.12);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #020617;
+            --bg-sidebar: #0f172a;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --glass-border: rgba(148, 163, 184, 0.12);
+            
+            --success-bg: rgba(16, 185, 129, 0.15);
+            --warning-bg: rgba(245, 158, 11, 0.15);
+            --danger-bg: rgba(239, 68, 68, 0.15);
+            --info-bg: rgba(59, 130, 246, 0.18);
+            --purple-bg: rgba(139, 92, 246, 0.15);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.45);
+            --shadow-glow: 0 0 48px rgba(59, 130, 246, 0.18);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            margin: 0;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; bottom: 0; left: 0;
+            z-index: 1000;
+            border-right: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--primary-accent), var(--primary-blue));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .sidebar-brand-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+        .sidebar-brand-sub {
+            font-size: 0.65rem;
+            color: var(--sidebar-text);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 1.5rem 0;
+            overflow-y: auto;
+        }
+
+        .nav-label {
+            padding: 0 1.5rem 0.75rem;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-item { margin: 0.2rem 1rem; }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1rem;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: var(--sidebar-hover);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, var(--sidebar-active), rgba(59, 130, 246, 0.1));
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-link i { font-size: 1.1rem; }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .node-status-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .dot-pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Main Wrapper */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 72px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .header-title { margin: 0; font-weight: 700; font-size: 1.25rem; color: var(--text-main); }
+        .header-sub { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+
+        .telemetry-status {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .clock-wrap { text-align: right; border-right: 1px solid var(--border-color); padding-right: 1.5rem; }
+        .clock-time { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--primary-accent); font-size: 1.1rem; }
+        .clock-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+
+        .topbar-actions { display: flex; align-items: center; gap: 0.75rem; }
+
+        .icon-btn {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: var(--bg-body); border: 1px solid var(--border-color);
+            color: var(--text-muted); display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; cursor: pointer;
+        }
+
+        .icon-btn:hover { background: var(--border-color); color: var(--primary-accent); }
+
+        .user-profile {
+            display: flex; align-items: center; gap: 10px; padding: 5px 5px 5px 12px;
+            background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 99px;
+            cursor: pointer; transition: all 0.2s;
+        }
+
+        .user-profile:hover { border-color: var(--primary-accent); box-shadow: var(--shadow-glow); }
+
+        .avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-accent), var(--primary-blue));
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.8rem;
+        }
+
+        /* Content Area */
+        .content-area { padding: 2rem; flex: 1; }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.25rem;
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.2s;
+        }
+
+        .summary-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-glow); }
+
+        .summary-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; margin-bottom: 1rem;
+        }
+
+        .icon-blue { background: var(--info-bg); color: var(--info-color); }
+        .icon-green { background: var(--success-bg); color: var(--success-color); }
+        .icon-orange { background: var(--warning-bg); color: var(--warning-color); }
+        .icon-purple { background: var(--purple-bg); color: var(--purple-color); }
+        .icon-teal { background: rgba(20, 184, 166, 0.15); color: #14b8a6; }
+
+        .summary-value { font-size: 1.75rem; font-weight: 800; color: var(--text-main); margin: 0; line-height: 1.2; }
+        .summary-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Main Sections Grid */
+        .sections-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .glass-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 1.75rem;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .panel-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-title { font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+
+        /* Emission Protocol Panel */
+        .rc-search-wrap {
+            position: relative; margin-bottom: 1.5rem;
+        }
+
+        .rc-input {
+            width: 100%; padding: 0.8rem 1rem 0.8rem 2.75rem;
+            background: var(--bg-body); border: 1px solid var(--border-color);
+            border-radius: 14px; color: var(--text-main); font-weight: 600;
+            outline: none; transition: border-color 0.2s;
+        }
+
+        .rc-input:focus { border-color: var(--primary-accent); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+
+        .rc-search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+
+        .btn-analyze {
+            position: absolute; right: 6px; top: 6px; bottom: 6px;
+            background: linear-gradient(135deg, var(--primary-accent), var(--primary-blue));
+            color: white; border: none; padding: 0 1.25rem; border-radius: 10px;
+            font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;
+            transition: all 0.2s;
+        }
+
+        .btn-analyze:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+
+        .validation-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.75rem 1rem; background: var(--bg-body); border-radius: 12px;
+            margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500;
+        }
+
+        .validation-item.active { border-left: 4px solid var(--primary-accent); }
+
+        .check-circle { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
+        .check-circle.checked { background: var(--success-color); border-color: var(--success-color); color: white; }
+
+        /* Emission Metrics */
+        .metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.5rem; }
+        .metric-box {
+            background: var(--bg-body); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 1.25rem; text-align: center;
+        }
+        .metric-value { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem; }
+        .metric-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+
+        /* Analyzer Plot */
+        .analyzer-display {
+            background: #0f172a; border-radius: 16px; padding: 1.25rem;
+            margin-top: 1.5rem; position: relative; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .analyzer-status { color: #94a3b8; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: block; }
+        .analyzer-msg { color: white; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem; display: block; }
+
+        .analyzer-wave { height: 60px; width: 100%; opacity: 0.6; }
+
+        .btn-validate {
+            width: 100%; padding: 1rem; margin-top: 1.5rem;
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white; border: none; border-radius: 14px;
+            font-weight: 700; font-size: 1rem; text-transform: uppercase;
+            letter-spacing: 1px; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+
+        .btn-validate:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3); }
+
+        /* Telemetry Panel */
+        .telemetry-card {
+            background: var(--bg-body); border: 1px solid var(--border-color);
+            border-radius: 18px; padding: 1.25rem; margin-bottom: 1rem;
+        }
+
+        .tele-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .tele-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(59,130,246,0.1); color: var(--primary-accent); display: flex; align-items: center; justify-content: center; }
+        .tele-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+        .tele-value { font-size: 1.5rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+
+        .mini-chart { height: 40px; margin-top: 10px; }
+
+        /* Table */
+        .table-wrap { overflow-x: auto; }
+        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .modern-table th {
+            padding: 1rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-muted); border-bottom: 1px solid var(--border-color); font-weight: 700;
+        }
+        .modern-table td { padding: 1rem; vertical-align: middle; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
+        .modern-table tr:last-child td { border-bottom: none; }
+        .modern-table tr:hover { background: rgba(59, 130, 246, 0.02); }
+
+        .fuel-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .fuel-diesel { background: #fee2e2; color: #ef4444; }
+        .fuel-petrol { background: #dbeafe; color: #3b82f6; }
+
+        .res-badge { padding: 4px 12px; border-radius: 99px; font-size: 0.7rem; font-weight: 700; }
+        .res-compliant { background: var(--success-bg); color: var(--success-color); }
+        .res-violation { background: var(--danger-bg); color: var(--danger-color); }
+
+        /* Bottom Widgets */
+        .widgets-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .widget-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 1.25rem; box-shadow: var(--shadow-soft);
+        }
+
+        .widget-title { font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 1rem; }
+
+        /* Donut Chart Wrap */
+        .donut-wrap { height: 120px; position: relative; display: flex; align-items: center; justify-content: center; }
+        .donut-center { position: absolute; text-align: center; }
+        .donut-val { font-size: 1.25rem; font-weight: 800; display: block; line-height: 1; }
+        .donut-lab { font-size: 0.6rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+
+        /* Quick Actions Grid */
+        .qa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+        .qa-btn {
+            background: var(--bg-body); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 1rem 0.5rem; text-align: center;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .qa-btn:hover { border-color: var(--primary-accent); background: rgba(59,130,246,0.05); }
+        .qa-btn i { font-size: 1.25rem; color: var(--primary-accent); display: block; margin-bottom: 5px; }
+        .qa-btn span { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); }
+
+        /* Alert Item */
+        .alert-item { display: flex; gap: 10px; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); }
+        .alert-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .alert-icon-mini { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+        .alert-txt { font-size: 0.75rem; font-weight: 500; flex: 1; }
+        .alert-time { font-size: 0.6rem; color: var(--text-muted); font-weight: 600; }
+
+        @media (max-width: 1400px) {
+            .summary-grid { grid-template-columns: repeat(3, 1fr); }
+            .sections-grid { grid-template-columns: 1fr; }
+            .widgets-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .section-content { display: none; animation: fadeIn 0.4s ease-out; }
+        .section-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">
+                <i class="bi bi-shield-lock"></i>
+            </div>
+            <div>
+                <h5 class="sidebar-brand-name">IVTMS</h5>
+                <div class="sidebar-brand-sub">Inspector Console</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <div class="nav-label">Main Console</div>
+            <div class="nav-item">
+                <a href="javascript:void(0)" class="nav-link active" onclick="switchSection('live-test', this)">
+                    <i class="bi bi-activity"></i> Live Test
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="javascript:void(0)" class="nav-link" onclick="switchSection('test-history', this)">
+                    <i class="bi bi-clock-history"></i> Test History
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="javascript:void(0)" class="nav-link" onclick="switchSection('performance', this)">
+                    <i class="bi bi-graph-up-arrow"></i> Performance
+                </a>
+            </div>
+
+            <div class="nav-label" style="margin-top: 1.5rem;">System</div>
+            <div class="nav-item">
+                <a href="javascript:void(0)" class="nav-link" onclick="switchSection('profile', this)">
+                    <i class="bi bi-person-badge"></i> My Profile
+                </a>
+            </div>
+            <div class="nav-item">
+                <form th:action="@{/logout}" method="post" id="logoutForm" style="display:none;"></form>
+                <a href="javascript:document.getElementById('logoutForm').submit()" class="nav-link text-danger">
+                    <i class="bi bi-box-arrow-right"></i> Sign Out
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="node-status-card">
+                <div class="status-indicator">
+                    <div class="dot-pulse"></div>
+                    <span>NODE STATUS: SYNCED</span>
+                </div>
+                <div style="font-size: 0.65rem; color: var(--sidebar-text); font-family: 'JetBrains Mono';">
+                    Last Sync: <span th:text="${#temporals.format(#temporals.createNow(), 'HH:mm:ss')} + ' IST'">18:59:08 IST</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div>
+                <h1 class="header-title">Inspector Center</h1>
+                <div class="header-sub">PUC Authorized Center: <span class="text-primary fw-bold" th:text="${inspectorCenterId ?: 'MH-12-0045'}">MH-12-0045</span></div>
+            </div>
+
+            <div class="telemetry-status">
+                <div class="clock-wrap">
+                    <div class="clock-time" id="live-clock">18:59:08 IST</div>
+                    <div class="clock-label">Real-time Telemetry</div>
+                </div>
+
+                <div class="topbar-actions">
+                    <button class="icon-btn" id="theme-toggle">
+                        <i class="bi bi-moon-stars"></i>
+                    </button>
+                    <button class="icon-btn position-relative">
+                        <i class="bi bi-bell"></i>
+                        <span class="position-absolute top-2 start-75 translate-middle badge rounded-pill bg-danger" style="padding: 3px; border: 2px solid var(--card-bg);">
+                            <span class="visually-hidden">unread messages</span>
+                        </span>
+                    </button>
+                    
+                    <div class="user-profile">
+                        <div class="avatar" th:text="${user != null ? #strings.substring(user.fullName,0,1) : 'I'}">P</div>
+                        <div style="text-align: left; padding-right: 10px;">
+                            <div style="font-size: 0.8rem; font-weight: 700; line-height: 1;" th:text="${user != null ? user.fullName : 'PUC Inspector'}">PUC Inspector</div>
+                            <div style="font-size: 0.6rem; color: var(--text-muted); font-weight: 600;">Level 2 Certifier <i class="bi bi-chevron-down ms-1"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            
+            <div id="live-test-section" class="section-content active">
+            <!-- Summary Grid -->
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-icon icon-blue"><i class="bi bi-clipboard-pulse"></i></div>
+                    <div class="summary-label">Tests Today</div>
+                    <h3 class="summary-value" th:text="${testsToday ?: '24'}">24</h3>
+                    <div style="font-size: 0.7rem; color: var(--success-color); font-weight: 700; margin-top: 5px;"><i class="bi bi-arrow-up"></i> 20% vs yesterday</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon icon-green"><i class="bi bi-patch-check"></i></div>
+                    <div class="summary-label">Compliant</div>
+                    <h3 class="summary-value" th:text="${compliantCount ?: '18'}">18</h3>
+                    <div style="font-size: 0.7rem; color: var(--primary-accent); font-weight: 700; margin-top: 5px;">75% success rate</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon icon-orange"><i class="bi bi-exclamation-triangle"></i></div>
+                    <div class="summary-label">Violations</div>
+                    <h3 class="summary-value" th:text="${violationCount ?: '6'}">6</h3>
+                    <div style="font-size: 0.7rem; color: var(--danger-color); font-weight: 700; margin-top: 5px;">Requires attention</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon icon-purple"><i class="bi bi-file-earmark-check"></i></div>
+                    <div class="summary-label">Certificates Issued</div>
+                    <h3 class="summary-value" th:text="${certificatesThisMonth ?: '22'}">22</h3>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; margin-top: 5px;">This month</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon icon-teal"><i class="bi bi-hdd-network"></i></div>
+                    <div class="summary-label">Uptime</div>
+                    <h3 class="summary-value" th:text="${systemHealthPct ?: '99.8'} + '%'">99.8%</h3>
+                    <div style="font-size: 0.7rem; color: var(--success-color); font-weight: 700; margin-top: 5px;">System healthy</div>
+                </div>
+            </div>
+
+            <!-- Main Sections Grid -->
+            <div class="sections-grid">
+                <!-- Emission Protocol -->
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title"><i class="bi bi-lightning-charge-fill text-primary"></i> New Emission Protocol</h2>
+                    </div>
+
+                    <div class="rc-search-wrap">
+                        <i class="bi bi-search rc-search-icon"></i>
+                        <input type="text" class="rc-input" id="rcInput" placeholder="VEHICLE IDENTIFIER (RC NO.)" value="MH-12-AB-1234">
+                        <button class="btn-analyze" onclick="startVehicleLookup()">Analyze</button>
+                    </div>
+
+                    <div class="nav-label">Pre-test Validation</div>
+                    <div class="validation-item" id="step-thermal">
+                        <span>Engine Thermal Baseline (&gt;60°C)</span>
+                        <div class="check-circle" id="check-thermal"><i class="bi bi-check"></i></div>
+                    </div>
+                    <div class="validation-item" id="step-integrity">
+                        <span>Manifold Integrity Check</span>
+                        <div class="check-circle" id="check-integrity"><i class="bi bi-check"></i></div>
+                    </div>
+                    <div class="validation-item" id="step-idle">
+                        <span id="txt-idle">Idle RPM Stability</span>
+                        <div class="check-circle" id="check-idle"><i class="bi bi-check"></i></div>
+                    </div>
+
+                    <div class="metrics-row">
+                        <div class="metric-box">
+                            <input type="number" step="0.01" id="val-co" class="metric-value border-0 bg-transparent text-center w-100" value="0.00" oninput="updateLiveResult()">
+                            <div class="metric-label">CO (% volume)</div>
+                            <div style="font-size: 0.6rem; font-weight: 700; margin-top: 5px;" id="hint-co">Pending</div>
+                        </div>
+                        <div class="metric-box">
+                            <input type="number" step="1" id="val-hc" class="metric-value border-0 bg-transparent text-center w-100" value="0" oninput="updateLiveResult()">
+                            <div class="metric-label">HC (ppm)</div>
+                            <div style="font-size: 0.6rem; font-weight: 700; margin-top: 5px;" id="hint-hc">Pending</div>
+                        </div>
+                        <div class="metric-box">
+                            <input type="number" step="0.01" id="val-co2" class="metric-value border-0 bg-transparent text-center w-100" value="0.00" oninput="updateLiveResult()">
+                            <div class="metric-label">CO₂ (% volume)</div>
+                            <div style="font-size: 0.6rem; font-weight: 700; margin-top: 5px;" id="hint-co2">Pending</div>
+                        </div>
+                    </div>
+
+                    <div class="analyzer-display">
+                        <span class="analyzer-status">Analyzer Real-time Output</span>
+                        <span class="analyzer-msg" id="analyzerMsg">READY FOR SCAN</span>
+                        <div style="font-size: 0.7rem; color: #64748b;" id="analyzerDetail">Enter RC and click Analyze</div>
+                        <div class="analyzer-wave">
+                             <canvas id="waveChart"></canvas>
+                        </div>
+                    </div>
+
+                    <button class="btn-validate" id="btnValidate" onclick="generateCertificate()" disabled>
+                        <i class="bi bi-patch-check"></i> Validate & Generate Certificate
+                    </button>
+                </div>
+
+                <!-- Right Side: Telemetry & Table -->
+                <div class="d-flex flex-column gap-4">
+                    <!-- System Telemetry -->
+                    <div class="glass-panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title">System Telemetry</h2>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--success-color); font-size: 0.65rem; padding: 4px 8px; border: 1px solid rgba(16, 185, 129, 0.2);"><i class="bi bi-circle-fill" style="font-size: 0.4rem; vertical-align: middle;"></i> ANALYZER ONLINE</span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="telemetry-card">
+                                    <div class="tele-header">
+                                        <div class="tele-icon"><i class="bi bi-thermometer-half"></i></div>
+                                        <span class="tele-label">Core Chamber Temperature</span>
+                                        <span class="ms-auto badge bg-success bg-opacity-10 text-success" style="font-size: 0.6rem;">Live</span>
+                                    </div>
+                                    <div class="d-flex align-items-end justify-content-between">
+                                        <div class="tele-value">82.4°C</div>
+                                        <div class="mini-chart" style="width: 120px;">
+                                            <canvas id="tempChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="telemetry-card">
+                                    <div class="tele-header">
+                                        <div class="tele-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--purple-color);"><i class="bi bi-clock"></i></div>
+                                        <span class="tele-label">Sensor Latency</span>
+                                        <span class="ms-auto badge bg-success bg-opacity-10 text-success" style="font-size: 0.6rem;">Live</span>
+                                    </div>
+                                    <div class="d-flex align-items-end justify-content-between">
+                                        <div class="tele-value">0.8ms</div>
+                                        <div class="mini-chart" style="width: 120px;">
+                                            <canvas id="latencyChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Sessions -->
+                    <div class="glass-panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title">Recent Sessions at This Node</h2>
+                            <a href="javascript:void(0)" onclick="switchSection('test-history')" class="text-primary fw-bold" style="font-size: 0.75rem; text-decoration: none;">View All</a>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Vehicle Identity</th>
+                                        <th>Fuel</th>
+                                        <th>Result</th>
+                                        <th>Auth</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="test : ${recentSessionsPreview}">
+                                        <td style="font-family: 'JetBrains Mono'; font-weight: 500;" th:text="${test.testDate}">2026-05-13</td>
+                                        <td>
+                                            <div class="fw-bold" th:text="${test.vehicle.registrationNumber}">MH-12-XY-9876</div>
+                                            <div style="font-size: 0.7rem; color: var(--text-muted);" th:text="${test.vehicle.fuelType} + ' | BS-IV'">Diesel | BS-IV</div>
+                                        </td>
+                                        <td>
+                                            <span th:class="'fuel-badge ' + (${test.vehicle.fuelType == 'Diesel' ? 'fuel-diesel' : 'fuel-petrol'})" th:text="${test.vehicle.fuelType}">DIESEL</span>
+                                        </td>
+                                        <td>
+                                            <span th:class="'res-badge ' + (${test.status == 'PASS' ? 'res-compliant' : 'res-violation'})" th:text="${test.status}">PASS</span>
+                                        </td>
+                                        <td><i class="bi bi-check-circle-fill text-success"></i></td>
+                                    </tr>
+                                    <!-- Fallback rows -->
+                                    <tr th:if="${#lists.isEmpty(recentSessionsPreview)}">
+                                        <td style="font-family: 'JetBrains Mono';">12:45:10</td>
+                                        <td>
+                                            <div class="fw-bold">MH-12-XY-9876</div>
+                                            <div style="font-size: 0.7rem; color: var(--text-muted);">Diesel | BS-IV</div>
+                                        </td>
+                                        <td><span class="fuel-badge fuel-diesel">DIESEL</span></td>
+                                        <td><span class="res-badge res-compliant">COMPLIANT</span></td>
+                                        <td><i class="bi bi-check-circle-fill text-success"></i></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Widgets Grid -->
+            <div class="widgets-grid">
+                <!-- Certificate Summary -->
+                <div class="widget-card">
+                    <div class="widget-title">Certificate Summary</div>
+                    <div class="donut-wrap">
+                        <canvas id="donutChart"></canvas>
+                        <div class="donut-center">
+                            <span class="donut-val" th:text="${certificatesThisMonth ?: '22'}">22</span>
+                            <span class="donut-lab">This Month</span>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between mb-1" style="font-size: 0.7rem; font-weight: 600;">
+                            <span><i class="bi bi-circle-fill text-success me-1" style="font-size: 0.5rem;"></i> Compliant</span>
+                            <span th:text="${compliantCount ?: '16'} + ' (72.7%)'">16 (72.7%)</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size: 0.7rem; font-weight: 600;">
+                            <span><i class="bi bi-circle-fill text-danger me-1" style="font-size: 0.5rem;"></i> Violation</span>
+                            <span th:text="${violationCount ?: '5'} + ' (22.7%)'">5 (22.7%)</span>
+                        </div>
+                        <div class="d-flex justify-content-between" style="font-size: 0.7rem; font-weight: 600;">
+                            <span><i class="bi bi-circle-fill text-secondary me-1" style="font-size: 0.5rem;"></i> Re-Test</span>
+                            <span>1 (4.6%)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emission Standards -->
+                <div class="widget-card">
+                    <div class="widget-title">Emission Standards</div>
+                    <div class="d-flex flex-column gap-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold" style="font-size: 0.75rem;">BS-II & Below</span>
+                            <span class="badge bg-danger bg-opacity-10 text-danger" style="font-size: 0.6rem;">Not Allowed</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold" style="font-size: 0.75rem;">BS-III</span>
+                            <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.6rem;">Allowed</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold" style="font-size: 0.75rem;">BS-IV</span>
+                            <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.6rem;">Allowed</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold" style="font-size: 0.75rem;">BS-VI</span>
+                            <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.6rem;">Allowed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="widget-card">
+                    <div class="widget-title">Quick Actions</div>
+                    <div class="qa-grid">
+                        <div class="qa-btn" onclick="resetTest()">
+                            <i class="bi bi-play-circle"></i>
+                            <span>Start New Test</span>
+                        </div>
+                        <div class="qa-btn" onclick="Swal.fire('Manual Entry', 'Manual entry is restricted to Level 3 Certifiers only.', 'info')">
+                            <i class="bi bi-pencil-square"></i>
+                            <span>Manual Entry</span>
+                        </div>
+                        <div class="qa-btn" onclick="if(currentVehicle) window.open('/api/puc/download-by-rc/'+currentVehicle.registrationNumber, '_blank'); else Swal.fire('Error', 'No vehicle selected', 'error')">
+                            <i class="bi bi-printer"></i>
+                            <span>Print Certificate</span>
+                        </div>
+                        <div class="qa-btn" onclick="resetTest()">
+                            <i class="bi bi-arrow-repeat"></i>
+                            <span>Re-Test</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts & Notifications -->
+                <div class="widget-card">
+                    <div class="widget-title d-flex justify-content-between">
+                        Alerts & Notifications
+                        <a href="#" class="text-primary fw-bold" style="font-size: 0.65rem; text-decoration: none;">View All</a>
+                    </div>
+                    <div class="d-flex flex-column gap-2">
+                        <div class="alert-item">
+                            <div class="alert-icon-mini" style="background: rgba(245, 158, 11, 0.15); color: var(--warning-color);"><i class="bi bi-exclamation-triangle"></i></div>
+                            <div class="alert-txt">High HC level detected in last test</div>
+                            <div class="alert-time">2 min ago</div>
+                        </div>
+                        <div class="alert-item">
+                            <div class="alert-icon-mini" style="background: rgba(59, 130, 246, 0.15); color: var(--info-color);"><i class="bi bi-info-circle"></i></div>
+                            <div class="alert-txt">Analyzer calibration due in 3 days</div>
+                            <div class="alert-time">1 hour ago</div>
+                        </div>
+                        <div class="alert-item">
+                            <div class="alert-icon-mini" style="background: rgba(16, 185, 129, 0.15); color: var(--success-color);"><i class="bi bi-check2"></i></div>
+                            <div class="alert-txt">System diagnostics completed</div>
+                            <div class="alert-time">3 hours ago</div>
+                        </div>
+                    </div>
+            </div> <!-- End live-test-section -->
+
+            <!-- Test History Section -->
+            <div id="test-history-section" class="section-content">
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title"><i class="bi bi-clock-history text-primary"></i> Complete Test History</h2>
+                        <div class="d-flex gap-2">
+                            <input type="text" class="rc-input py-2" placeholder="Filter by RC..." style="width: 200px;">
+                            <button class="btn btn-primary btn-sm rounded-pill px-3">Search</button>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Certificate No.</th>
+                                    <th>RC Number</th>
+                                    <th>Test Date</th>
+                                    <th>Expiry Date</th>
+                                    <th>CO Level</th>
+                                    <th>HC Level</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="cert : ${recentCerts}">
+                                    <td class="fw-bold" th:text="${cert.certificateNumber}">PUC-MH12-1234</td>
+                                    <td th:text="${cert.vehicle.registrationNumber}">MH-12-AB-1234</td>
+                                    <td th:text="${cert.testDate}">2026-05-13</td>
+                                    <td th:text="${cert.expiryDate}">2027-05-13</td>
+                                    <td th:text="${cert.carbonMonoxideLevel} + '%'">0.02%</td>
+                                    <td th:text="${cert.hydrocarbonLevel} + ' ppm'">120 ppm</td>
+                                    <td>
+                                        <span th:class="'res-badge ' + (${cert.status == 'PASS' ? 'res-compliant' : 'res-violation'})" th:text="${cert.status}">PASS</span>
+                                    </td>
+                                    <td>
+                                        <a th:href="'/api/puc/download/' + ${cert.certificateNumber}" target="_blank" class="icon-btn d-inline-flex">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Section -->
+            <div id="performance-section" class="section-content">
+                <div class="row g-4">
+                    <div class="col-md-8">
+                        <div class="glass-panel h-100">
+                            <div class="panel-header">
+                                <h2 class="panel-title"><i class="bi bi-bar-chart text-primary"></i> Testing Volume Trends</h2>
+                            </div>
+                            <div style="height: 300px;">
+                                <canvas id="performanceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-panel h-100">
+                            <div class="panel-header">
+                                <h2 class="panel-title"><i class="bi bi-pie-chart text-primary"></i> Compliance Mix</h2>
+                            </div>
+                            <div style="height: 250px;">
+                                <canvas id="complianceMixChart"></canvas>
+                            </div>
+                            <div class="mt-4">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted small">Efficiency Rating</span>
+                                    <span class="fw-bold text-success">98.2%</span>
+                                </div>
+                                <div class="progress" style="height: 6px; background: var(--bg-body);">
+                                    <div class="progress-bar bg-success" style="width: 98%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="glass-panel">
+                            <div class="panel-header">
+                                <h2 class="panel-title"><i class="bi bi-speedometer2 text-primary"></i> Node Diagnostics</h2>
+                            </div>
+                            <div class="row text-center">
+                                <div class="col-md-3">
+                                    <div class="p-3">
+                                        <div class="text-muted small mb-1">Avg Test Duration</div>
+                                        <h4 class="fw-bold">4.2 min</h4>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="p-3">
+                                        <div class="text-muted small mb-1">Sensor Accuracy</div>
+                                        <h4 class="fw-bold">99.9%</h4>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="p-3">
+                                        <div class="text-muted small mb-1">Data Sync Rate</div>
+                                        <h4 class="fw-bold">1.2s</h4>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="p-3">
+                                        <div class="text-muted small mb-1">Uptime Hours</div>
+                                        <h4 class="fw-bold">2,450h</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="section-content">
+                <div class="glass-panel mx-auto" style="max-width: 800px;">
+                    <div class="text-center mb-4">
+                        <div class="avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;" th:text="${user != null ? #strings.substring(user.fullName,0,1) : 'I'}">P</div>
+                        <h3 class="fw-bold" th:text="${user != null ? user.fullName : 'PUC Inspector'}">PUC Inspector</h3>
+                        <p class="text-muted" th:text="${user != null ? user.email : 'inspector@ivtms.gov.in'}">inspector@ivtms.gov.in</p>
+                        <span class="badge bg-primary px-3 py-2 rounded-pill">Level 2 Certified Inspector</span>
+                    </div>
+                    <hr class="opacity-10">
+                    <div class="row g-4 p-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">Full Name</label>
+                            <div class="fw-bold" th:text="${user != null ? user.fullName : 'PUC Inspector'}">PUC Inspector</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">Mobile Number</label>
+                            <div class="fw-bold">+91 98765 43210</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">Assigned Center</label>
+                            <div class="fw-bold" th:text="${inspectorCenterId ?: 'MH-12-0045'}">MH-12-0045</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">License Expiry</label>
+                            <div class="fw-bold text-success">24 Dec 2028</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-muted small fw-bold">Authorities</label>
+                            <div class="d-flex gap-2 mt-2">
+                                <span class="badge bg-secondary bg-opacity-10 text-main border border-secondary border-opacity-20">Emission Testing</span>
+                                <span class="badge bg-secondary bg-opacity-10 text-main border border-secondary border-opacity-20">Certificate Issuance</span>
+                                <span class="badge bg-secondary bg-opacity-10 text-main border border-secondary border-opacity-20">Node Maintenance</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5 text-center">
+                        <button class="btn btn-outline-primary rounded-pill px-4 me-2">Edit Profile</button>
+                        <button class="btn btn-primary rounded-pill px-4">Account Settings</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Real-time Clock
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-IN', { hour12: false }) + ' IST';
+            document.getElementById('live-clock').innerText = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Section Switching Logic
+        function switchSection(sectionId, element) {
+            // Update sidebar links
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            if (element) {
+                element.classList.add('active');
+            } else {
+                // Fallback for direct calls
+                document.querySelector(`.nav-link[onclick*="${sectionId}"]`)?.classList.add('active');
+            }
+
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show target section
+            const target = document.getElementById(`${sectionId}-section`);
+            if (target) {
+                target.classList.add('active');
+                window.scrollTo(0, 0);
+                
+                // Re-init charts if needed
+                if (sectionId === 'performance') initPerformanceCharts();
+            }
+        }
+
+        function resetTest() {
+            switchSection('live-test');
+            currentVehicle = null;
+            document.getElementById('rcInput').value = '';
+            document.getElementById('analyzerMsg').innerText = "READY FOR SCAN";
+            document.getElementById('analyzerDetail').innerText = "Enter RC and click Analyze";
+            document.getElementById('btnValidate').disabled = true;
+            document.getElementById('val-co').value = '0.00';
+            document.getElementById('val-hc').value = '0';
+            document.getElementById('val-co2').value = '0.00';
+            
+            document.querySelectorAll('.validation-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.check-circle').forEach(el => {
+                el.classList.remove('checked');
+                el.innerHTML = '<i class="bi bi-check"></i>';
+            });
+            
+            document.getElementById('hint-co').innerText = 'Pending';
+            document.getElementById('hint-hc').innerText = 'Pending';
+            document.getElementById('hint-co2').innerText = 'Pending';
+            document.getElementById('hint-co').style.color = 'var(--text-muted)';
+            document.getElementById('hint-hc').style.color = 'var(--text-muted)';
+            document.getElementById('hint-co2').style.color = 'var(--text-muted)';
+        }
+
+        // Theme Toggle
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            document.getElementById('theme-toggle').innerHTML = newTheme === 'dark' ? '<i class="bi bi-moon-stars"></i>' : '<i class="bi bi-sun"></i>';
+        });
+
+        let currentVehicle = null;
+
+        async function startVehicleLookup() {
+            const rc = document.getElementById('rcInput').value.trim();
+            if (!rc) return;
+
+            const btn = document.querySelector('.btn-analyze');
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`/api/vehicles?rc=${rc}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    Swal.fire('Error', 'Vehicle not found', 'error');
+                } else {
+                    currentVehicle = data;
+                    document.getElementById('analyzerMsg').innerText = "VEHICLE VERIFIED";
+                    document.getElementById('analyzerDetail').innerText = `${data.manufacturer} ${data.model} | ${data.fuelType}`;
+                    
+                    // Trigger animations
+                    animateChecklist();
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Error', 'Failed to fetch vehicle data', 'error');
+            } finally {
+                btn.innerText = 'Analyze';
+                btn.disabled = false;
+            }
+        }
+
+        function animateChecklist() {
+            const steps = ['thermal', 'integrity', 'idle'];
+            let delay = 500;
+            
+            steps.forEach((step, i) => {
+                setTimeout(() => {
+                    const item = document.getElementById(`step-${step}`);
+                    const check = document.getElementById(`check-${step}`);
+                    if(item) item.classList.add('active');
+                    if(check) {
+                        check.classList.add('checked');
+                        check.innerHTML = '<i class="bi bi-check"></i>';
+                    }
+                    
+                    if (i === steps.length - 1) {
+                        document.getElementById('btnValidate').disabled = false;
+                        updateLiveResult();
+                    }
+                }, delay * (i + 1));
+            });
+        }
+
+        function updateLiveResult() {
+            const co = parseFloat(document.getElementById('val-co').value) || 0;
+            const hc = parseFloat(document.getElementById('val-hc').value) || 0;
+            const co2 = parseFloat(document.getElementById('val-co2').value) || 0;
+
+            const coLimit = currentVehicle && currentVehicle.fuelType === 'Diesel' ? 0.5 : 3.0;
+            const hcLimit = 1500;
+
+            updateHint('co', co <= coLimit);
+            updateHint('hc', hc <= hcLimit);
+            updateHint('co2', true); 
+        }
+
+        function updateHint(id, pass) {
+            const hint = document.getElementById(`hint-${id}`);
+            if (hint) {
+                hint.innerText = pass ? 'Within Limit' : 'Exceeds Limit';
+                hint.style.color = pass ? 'var(--success-color)' : 'var(--danger-color)';
+            }
+        }
+
+        async function generateCertificate() {
+            if (!currentVehicle) return;
+
+            const co = document.getElementById('val-co').value;
+            const hc = document.getElementById('val-hc').value;
+            const co2 = document.getElementById('val-co2').value;
+
+            const status = (parseFloat(co) <= (currentVehicle.fuelType === 'Diesel' ? 0.5 : 3.0)) ? 'PASS' : 'FAIL';
+            const today = new Date().toISOString().split('T')[0];
+            const nextYear = new Date();
+            nextYear.setFullYear(nextYear.getFullYear() + 1);
+            const expiry = nextYear.toISOString().split('T')[0];
+
+            const payload = {
+                certificateNumber: "PUC-" + currentVehicle.registrationNumber + "-" + Date.now().toString().slice(-4),
+                testDate: today,
+                expiryDate: expiry,
+                carbonMonoxideLevel: parseFloat(co),
+                hydrocarbonLevel: parseFloat(hc),
+                status: status
+            };
+
+            Swal.fire({
+                title: 'Generating Certificate...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            try {
+                const response = await fetch(`/api/puc/${currentVehicle.registrationNumber}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Certificate generated successfully.',
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonText: 'Download PDF',
+                        cancelButtonText: 'Done'
+                    }).then((res) => {
+                        if (res.isConfirmed) {
+                            window.open(`/api/puc/download-by-rc/${currentVehicle.registrationNumber}`, '_blank');
+                        }
+                        location.reload();
+                    });
+                } else {
+                    throw new Error('Failed to generate certificate');
+                }
+            } catch (err) {
+                Swal.fire('Error', err.message, 'error');
+            }
+        }
+
+        // Charts Initialization
+        function initCharts() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            
+            // Wave Chart
+            const waveCtx = document.getElementById('waveChart').getContext('2d');
+            const waveChart = new Chart(waveCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 30}, (_, i) => i),
+                    datasets: [{
+                        data: Array.from({length: 30}, () => Math.random() * 20 + 40),
+                        borderColor: '#10b981',
+                        borderWidth: 2,
+                        fill: true,
+                        backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                        tension: 0.5,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { display: false }, y: { display: false, min: 0, max: 100 } },
+                    animation: { duration: 0 }
+                }
+            });
+
+            setInterval(() => {
+                waveChart.data.datasets[0].data.shift();
+                waveChart.data.datasets[0].data.push(Math.random() * 20 + 40);
+                waveChart.update();
+            }, 100);
+
+            initPerformanceCharts();
+            initChartsGlobal();
+        }
+
+        function initPerformanceCharts() {
+            // Volume Trends
+            const perfCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(perfCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Tests Conducted',
+                        data: [45, 52, 38, 65, 48, 22, 18],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // Compliance Mix
+            const mixCtx = document.getElementById('complianceMixChart').getContext('2d');
+            new Chart(mixCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pass', 'Fail', 'Warning'],
+                    datasets: [{
+                        data: [75, 20, 5],
+                        backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', boxWidth: 10 } } }
+                }
+            });
+        }
+
+        function initChartsGlobal() {
+            const tempCtx = document.getElementById('tempChart').getContext('2d');
+            new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 10}, (_, i) => i),
+                    datasets: [{
+                        data: [80, 81, 82.4, 82, 81.5, 82, 82.4, 82.6, 82.4, 82.5],
+                        borderColor: '#3b82f6',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { display: false }, y: { display: false } }
+                }
+            });
+
+            const latencyCtx = document.getElementById('latencyChart').getContext('2d');
+            new Chart(latencyCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 10}, (_, i) => i),
+                    datasets: [{
+                        data: [0.7, 0.9, 0.8, 1.2, 0.8, 0.7, 0.9, 0.8, 0.7, 0.8],
+                        borderColor: '#8b5cf6',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { display: false }, y: { display: false } }
+                }
+            });
+
+            const donutCtx = document.getElementById('donutChart').getContext('2d');
+            new Chart(donutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Compliant', 'Violation', 'Re-Test'],
+                    datasets: [{
+                        data: [[[${compliantCount ?: 0}]], [[${violationCount ?: 0}]], 1],
+                        backgroundColor: ['#10b981', '#ef4444', '#94a3b8'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '80%',
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        window.addEventListener('load', initCharts);
+    </script>
+</body>
+</html>

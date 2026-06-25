@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - IVTMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        :root {
+            --primary-blue: #0d47a1;
+            --secondary-blue: #1976d2;
+            --surface-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #1a1a1a;
+            --text-muted: #6c757d;
+        }
+
+        [data-theme="dark"] {
+            --surface-bg: rgba(30, 30, 30, 0.95);
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--secondary-blue) 0%, var(--primary-blue) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            transition: background 0.3s;
+        }
+
+        .auth-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2rem;
+        }
+
+        .auth-card {
+            background: var(--surface-bg);
+            backdrop-filter: blur(10px);
+            padding: 3rem 2.5rem;
+            border-radius: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 520px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .auth-logo {
+            font-size: 3.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-title {
+            font-weight: 800;
+            font-size: 1.75rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            border: 1px solid #dee2e6;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            background-color: #fdfdfd;
+            color: var(--text-main);
+        }
+
+        [data-theme="dark"] .form-control, [data-theme="dark"] .input-group-text {
+            background-color: #2c2c2c;
+            border-color: #444;
+            color: #e0e0e0;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 4px rgba(13, 71, 161, 0.1);
+            border-color: var(--primary-blue);
+        }
+
+        .role-toggle-container {
+            background-color: #f1f3f5;
+            border-radius: 2rem;
+            display: flex;
+            padding: 0.3rem;
+            margin-bottom: 2rem;
+        }
+        [data-theme="dark"] .role-toggle-container {
+            background-color: #2c2c2c;
+        }
+
+        .role-btn {
+            flex: 1;
+            border: none;
+            border-radius: 2rem;
+            padding: 0.6rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .role-btn.active {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+
+        .input-group-text {
+            background-color: #fdfdfd;
+            border: 1px solid #dee2e6;
+            border-radius: 0.75rem 0 0 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .form-control.with-icon {
+            border-left: none;
+            border-radius: 0 0.75rem 0.75rem 0;
+        }
+
+        .btn-register {
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-blue));
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0.85rem;
+            font-weight: 700;
+            margin-top: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            color: white;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 71, 161, 0.3);
+            color: white;
+        }
+
+        .footer-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 2rem;
+        }
+
+        .signin-link {
+            color: var(--primary-blue);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        /* Navbar specific for dark background pages */
+        .auth-navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .auth-navbar .nav-link, .auth-navbar .navbar-brand {
+            color: white !important;
+        }
+        .auth-navbar .nav-link:hover {
+            color: rgba(255,255,255,0.8) !important;
+        }
+        .auth-navbar #theme-toggle {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .auth-navbar #theme-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(30deg);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top auth-navbar">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="bi bi-shield-check me-2"></i>
+                IVTMS
+            </a>
+            <button class="navbar-toggler border-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="bi bi-list text-white"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                </ul>
+                <div class="d-flex gap-2 align-items-center">
+                    <button id="theme-toggle" title="Toggle Light/Dark Mode">
+                        <i class="bi bi-moon-stars-fill"></i>
+                    </button>
+                    <a href="login.html" class="btn btn-outline-light rounded-pill px-4 shadow-sm fw-bold">Login</a>
+                    <a href="register.html" class="btn btn-light rounded-pill px-4 shadow-sm fw-bold" style="color: var(--primary-blue);">Register</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="auth-container">
+        <div class="auth-card text-center">
+            <div class="auth-logo">
+                <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Join the IVTMS ecosystem. Please provide your details.</p>
+
+            <div class="role-toggle-container">
+                <button type="button" class="role-btn active" id="btnCitizen" onclick="setRole('CITIZEN')">Citizen</button>
+                <button type="button" class="role-btn" id="btnRTO" onclick="setRole('RTO')">RTO Officer</button>
+                <button type="button" class="role-btn" id="btnInspector" onclick="setRole('INSPECTOR')">Inspector</button>
+                <button type="button" class="role-btn" id="btnAdmin" onclick="setRole('ADMIN')">Admin</button>
+            </div>
+
+            <form id="registerForm" action="http://localhost:8080/register" method="post" class="text-start">
+                <input type="hidden" id="role" name="role" value="CITIZEN">
+                <input type="hidden" id="fullName" name="fullName">
+                
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">First Name</label>
+                        <input type="text" id="firstName" class="form-control" placeholder="John" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" id="lastName" class="form-control" placeholder="Doe" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Aadhaar Number</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-fingerprint"></i></span>
+                        <input type="text" id="aadhaarNumber" name="aadhaarNumber" class="form-control with-icon" placeholder="12-digit Aadhaar Number" pattern="\d{12}" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input type="email" id="email" name="email" class="form-control with-icon" placeholder="name@example.com" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Secure Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" id="password" name="password" class="form-control with-icon" placeholder="Create a strong password" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 btn-register">Complete Registration</button>
+            </form>
+
+            <div class="footer-text">
+                Already have an account?<br>
+                <a href="login.html" class="signin-link">Sign In Here</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/theme.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function setRole(role) {
+            document.getElementById('role').value = role;
+            const btnCitizen = document.getElementById('btnCitizen');
+            const btnRTO = document.getElementById('btnRTO');
+            const btnInspector = document.getElementById('btnInspector');
+            const btnAdmin = document.getElementById('btnAdmin');
+            
+            btnCitizen.classList.remove('active');
+            btnRTO.classList.remove('active');
+            btnInspector.classList.remove('active');
+            btnAdmin.classList.remove('active');
+            
+            if (role === 'CITIZEN') {
+                btnCitizen.classList.add('active');
+            } else if (role === 'RTO') {
+                btnRTO.classList.add('active');
+            } else if (role === 'INSPECTOR') {
+                btnInspector.classList.add('active');
+            } else if (role === 'ADMIN') {
+                btnAdmin.classList.add('active');
+            }
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            document.getElementById('fullName').value = `${firstName} ${lastName}`.trim();
+        });
+    </script>
+</body>
+</html>
